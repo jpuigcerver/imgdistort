@@ -8,6 +8,8 @@ IF (Torch_FOUND)
     ${Torch_INSTALL_INCLUDE}/THC
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-  ADD_TORCH_PACKAGE(torch_imgdistort affine_binding.cu utils.c init.lua)
+  SET(src affine_binding.cu utils.c)
+  SET(luasrc init.lua)
+  ADD_TORCH_PACKAGE(torch_imgdistort "${src}" "${luasrc}")
   TARGET_LINK_LIBRARIES(torch_imgdistort luajit luaT THC TH)
 ENDIF()
