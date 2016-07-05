@@ -1,1 +1,1 @@
-# torch-imgdistorsion
+# imgdistort
