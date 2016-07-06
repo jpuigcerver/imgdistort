@@ -1,9 +1,3 @@
-IF(LUAROCKS_PREFIX)
-    MESSAGE(STATUS "Installing Torch through Luarocks")
-    STRING(REGEX REPLACE "(.*)lib/luarocks/rocks.*" "\\1" CMAKE_INSTALL_PREFIX  "${LUAROCKS_PREFIX}")
-    MESSAGE(STATUS "Prefix inferred from Luarocks: ${CMAKE_INSTALL_PREFIX}")
-ENDIF()
-
 FIND_PACKAGE(Torch)
 
 IF (Torch_FOUND)
@@ -14,8 +8,11 @@ IF (Torch_FOUND)
     ${Torch_INSTALL_INCLUDE}/THC
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-  SET(src affine_binding.cu utils.c)
-  SET(luasrc init.lua)
-  ADD_TORCH_PACKAGE(torch_imgdistort "${src}" "${luasrc}")
+  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+  MESSAGE(STATUS "Torch_INSTALL_INCLUDE = ${Torch_INSTALL_INCLUDE}")
+  MESSAGE(STATUS "Torch_INSTALL_LUA_PATH_SUBDIR = ${Torch_INSTALL_LUA_PATH_SUBDIR}")
+  MESSAGE(STATUS "Torch_INSTALL_LUA_CPATH_SUBDIR = ${Torch_INSTALL_LUA_CPATH_SUBDIR}")
+
+  ADD_TORCH_PACKAGE(torch_imgdistort "affine_binding.cu utils.c" "init.lua")
   TARGET_LINK_LIBRARIES(torch_imgdistort luajit luaT THC TH)
 ENDIF()

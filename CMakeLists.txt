@@ -12,6 +12,10 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     "(you may need to remove CMakeCache.txt and CMakeFiles).")
 endif()
 
-SET(CMAKE_SKIP_RPATH TRUE)
+IF(LUAROCKS_PREFIX)
+  MESSAGE(STATUS "Installing CuDNN through Luarocks")
+  STRING(REGEX REPLACE "(.*)lib/luarocks/rocks.*" "\\1" CMAKE_INSTALL_PREFIX  "${LUAROCKS_PREFIX}")
+  MESSAGE(STATUS "Prefix inferred from Luarocks: ${CMAKE_INSTALL_PREFIX}")
+ENDIF()
 
 ADD_SUBDIRECTORY(src)
