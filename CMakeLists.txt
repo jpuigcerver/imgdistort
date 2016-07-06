@@ -12,5 +12,6 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     "(you may need to remove CMakeCache.txt and CMakeFiles).")
 endif()
 
+SET(CMAKE_SKIP_RPATH TRUE)
 
-add_subdirectory(src)
+ADD_SUBDIRECTORY(src)

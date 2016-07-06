@@ -12,4 +12,10 @@ IF (Torch_FOUND)
   SET(luasrc init.lua)
   ADD_TORCH_PACKAGE(torch_imgdistort "${src}" "${luasrc}")
   TARGET_LINK_LIBRARIES(torch_imgdistort luajit luaT THC TH)
+
+  INSTALL(TARGETS torch_imgdistort
+    RUNTIME DESTINATION "${Torch_INSTALL_BIN_SUBDIR}"
+    LIBRARY DESTINATION "${Torch_INSTALL_LIB_SUBDIR}"
+    ARCHIVE DESTINATION "${Torch_INSTALL_LIB_SUBDIR}")
+
 ENDIF()
