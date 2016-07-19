@@ -1,1 +1,1 @@
-require 'libtorch_imgdistort'
+require 'libimgdistort'

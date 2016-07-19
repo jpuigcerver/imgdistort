@@ -1,4 +1,4 @@
-package = "torch-imgdistort"
+package = "imgdistort"
 version = "scm-1"
 
 source = {

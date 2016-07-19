@@ -1,8 +1,8 @@
 #ifndef CUTORCH_UTILS_INC
 #define CUTORCH_UTILS_INC
 
-#include "luaT.h"
-#include "TH.h"
+#include <luaT.h>
+#include <TH.h>
 
 #ifdef __cplusplus
 # define TORCH_EXTERNC extern "C"

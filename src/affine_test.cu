@@ -43,7 +43,7 @@ TEST_F(AffineTest, InvertAffineMatrix) {
   std::vector<float> iM1(6, 0.0f), iM2(6, 0.0f);
   invert_affine_matrix(M.data(), iM1.data());
   invert_affine_matrix(iM1.data(), iM2.data());
-  EXPECT_THAT(iM2, ::testing::ElementsAreArray(M));
+  EXPECT_THAT(iM2, ::testing::Pointwise(::testing::FloatNearPointwise(), M));
 }
 
 TEST_F(AffineTest, AffineIdempotent) {
@@ -58,10 +58,10 @@ TEST_F(AffineTest, AffineIdempotent) {
 }
 
 TEST_F(AffineTest, AffineTranslate) {
-  affine_cpu_[0] = 1.0f; affine_cpu_[1]  = 0.0f; affine_cpu_[2]  = -1.0f;
-  affine_cpu_[3] = 0.0f; affine_cpu_[4]  = 1.0f; affine_cpu_[5]  = +2.0f;
-  affine_cpu_[6] = 1.0f; affine_cpu_[7]  = 0.0f; affine_cpu_[8]  = +1.0f;
-  affine_cpu_[9] = 0.0f; affine_cpu_[10] = 1.0f; affine_cpu_[11] = -2.0f;
+  affine_cpu_[0] = 1.0f; affine_cpu_[1]  = 0.0f; affine_cpu_[2]  = +1.0f;
+  affine_cpu_[3] = 0.0f; affine_cpu_[4]  = 1.0f; affine_cpu_[5]  = -2.0f;
+  affine_cpu_[6] = 1.0f; affine_cpu_[7]  = 0.0f; affine_cpu_[8]  = -1.0f;
+  affine_cpu_[9] = 0.0f; affine_cpu_[10] = 1.0f; affine_cpu_[11] = +2.0f;
   CopyToGPU();
   affine_NCHW<float>(N, C, H, W, y_gpu(), x_gpu(), affine_gpu_);
   CopyToCPU();
@@ -103,10 +103,11 @@ TEST_F(AffineTest, AffineTranslate) {
 }
 
 TEST_F(AffineTest, AffineScale) {
-  affine_cpu_[0] = 1.2f; affine_cpu_[1]  = 0.0f; affine_cpu_[2]  = 0.0f;
-  affine_cpu_[3] = 0.0f; affine_cpu_[4]  = 0.8f; affine_cpu_[5]  = 0.0f;
-  affine_cpu_[6] = 0.7f; affine_cpu_[7]  = 0.0f; affine_cpu_[8]  = 0.0f;
-  affine_cpu_[9] = 0.0f; affine_cpu_[10] = 1.1f; affine_cpu_[11] = 0.0f;
+  memset(affine_cpu_, 0x00, sizeof(float) * 6 * 2);
+  affine_cpu_[0] = 1.0f / 1.2f; affine_cpu_[1]  = 0.0f;
+  affine_cpu_[3] = 0.0f;        affine_cpu_[4]  = 1.0f / 0.8f;
+  affine_cpu_[6] = 1.0f / 0.7f; affine_cpu_[7]  = 0.0f;
+  affine_cpu_[9] = 0.0f;        affine_cpu_[10] = 1.0f / 1.1f;
   CopyToGPU();
   affine_NCHW<float>(N, C, H, W, y_gpu(), x_gpu(), affine_gpu_);
   CopyToCPU();

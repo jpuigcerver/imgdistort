@@ -5,7 +5,7 @@ SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11")
 
 CUDA_ADD_EXECUTABLE(affine_test
   affine_test.cu
-  affine.cuh base_test.cuh utils.cuh)
+  affine.cuh utils.cuh base_test.cuh)
 TARGET_LINK_LIBRARIES(affine_test gflags glog gtest gmock)
 
 ADD_SUBDIRECTORY(torch)

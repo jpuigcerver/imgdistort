@@ -8,11 +8,12 @@ IF (Torch_FOUND)
     ${Torch_INSTALL_INCLUDE}/THC
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
-  MESSAGE(STATUS "Torch_INSTALL_INCLUDE = ${Torch_INSTALL_INCLUDE}")
-  MESSAGE(STATUS "Torch_INSTALL_LUA_PATH_SUBDIR = ${Torch_INSTALL_LUA_PATH_SUBDIR}")
-  MESSAGE(STATUS "Torch_INSTALL_LUA_CPATH_SUBDIR = ${Torch_INSTALL_LUA_CPATH_SUBDIR}")
+  CUDA_ADD_LIBRARY(imgdistort affine_binding.cu utils.c MODULE)
+  TARGET_LINK_LIBRARIES(imgdistort luajit luaT THC TH gflags glog)
 
-  ADD_TORCH_PACKAGE(torch_imgdistort "affine_binding.cu utils.c" "init.lua")
-  TARGET_LINK_LIBRARIES(torch_imgdistort luajit luaT THC TH)
+  INSTALL(TARGETS imgdistort
+    RUNTIME DESTINATION "${Torch_INSTALL_BIN}"
+    LIBRARY DESTINATION "${Torch_INSTALL_LIB}/lua/5.1")
+  INSTALL(FILES init.lua
+    DESTINATION "${Torch_INSTALL_SHARE}/lua/5.1/imgdistort")
 ENDIF()
