@@ -44,7 +44,6 @@ TORCH_UNUSED static void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup
 }
 #endif
 
-
 TORCH_API THLongStorage* cutorch_checklongargs(lua_State *L, int index);
 TORCH_API int cutorch_islongargs(lua_State *L, int index);
 

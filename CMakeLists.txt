@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(cuda_kernels C CXX)
+project(imgdistortion CXX)
 
 # The project should not be compiled from the source directory, since the
 # compilation and building process will generate files and some of them may
