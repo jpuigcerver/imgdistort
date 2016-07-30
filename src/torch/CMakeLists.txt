@@ -8,12 +8,15 @@ IF (Torch_FOUND)
     ${Torch_INSTALL_INCLUDE}/THC
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-  CUDA_ADD_LIBRARY(imgdistort affine_binding.cu utils.c MODULE)
-  TARGET_LINK_LIBRARIES(imgdistort luajit luaT THC TH gflags glog)
+  ADD_LIBRARY(imgdistort MODULE binding.cc utils.c utils.h)
+  TARGET_LINK_LIBRARIES(imgdistort
+    affine morphology
+    luajit luaT THC TH gflags glog)
 
   INSTALL(TARGETS imgdistort
     RUNTIME DESTINATION "${Torch_INSTALL_BIN}"
-    LIBRARY DESTINATION "${Torch_INSTALL_LIB}/lua/5.1")
+    LIBRARY DESTINATION "${Torch_INSTALL_LIB}/lua/5.1"
+    ARCHIVE DESTINATION "${Torch_INSTALL_LIB}/lua/5.1")
   INSTALL(FILES init.lua
     DESTINATION "${Torch_INSTALL_SHARE}/lua/5.1/imgdistort")
 ENDIF()
