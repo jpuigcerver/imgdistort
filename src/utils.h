@@ -22,7 +22,7 @@
 
 template <typename T>
 __host__ __device__
-inline float blinterp(const T* src, float x, float y, int w, int h) {
+float blinterp(const T* src, float x, float y, int w, int h) {
   const int x_i = static_cast<int>(x);
   const int y_i = static_cast<int>(y);
   const float a = fabs(x - x_i);
