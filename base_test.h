@@ -1,10 +1,8 @@
 #ifndef IMGDISTORT_SRC_BASE_TEST_H_
 #define IMGDISTORT_SRC_BASE_TEST_H_
 
-#include <vector>
-
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gmock/gmock-generated-matchers.h>
 
 namespace testing {
 

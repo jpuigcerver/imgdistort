@@ -1,8 +1,8 @@
 #include <vector>
 
-#include <glog/logging.h>
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gmock/gmock-matchers.h>
+#include <string.h>
 
 #include "base_test.h"
 #include "morphology.h"
