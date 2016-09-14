@@ -23,3 +23,17 @@ conveniently.
 
 Additionally, all batched images must have the same size, so if your images have different sizes 
 you will also need to pad them.
+
+## TODO
+
+- Write tests
+- Add CPU implementation
+- Add additional distortions
+  + Local Elastic Deformations
+  + Pinch
+  + Scratches
+  + Pixel permutation
+  + Motion blur
+  + Gaussian blur
+  + JPEG compression
+  + More ideas: Deep Self-Taught Learning for Handwritten Character Recognition, F. Bastien et al.
