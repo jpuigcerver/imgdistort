@@ -1,6 +1,5 @@
 #include <vector>
 
-#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -148,11 +147,4 @@ TEST_F(AffineTest, AffineRotate) {
 
 TEST_F(AffineTest, AffineShear) {
   // TODO(jpuigcerver): Implement
-}
-
-int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
-  ::testing::InitGoogleTest(&argc, argv);
-  google::ParseCommandLineFlags(&argc, &argv, true);
-  return RUN_ALL_TESTS();
 }

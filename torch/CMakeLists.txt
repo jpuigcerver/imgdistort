@@ -11,7 +11,7 @@ IF (Torch_FOUND)
   ADD_LIBRARY(imgdistort MODULE binding.cc utils.c utils.h)
   TARGET_LINK_LIBRARIES(imgdistort
     affine morphology
-    luajit luaT THC TH gflags glog)
+    luajit luaT THC TH ${GLOG_LIBRARIES})
 
   INSTALL(TARGETS imgdistort
     RUNTIME DESTINATION "${Torch_INSTALL_BIN}"

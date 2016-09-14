@@ -1,6 +1,5 @@
 #include <vector>
 
-#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -140,11 +139,4 @@ TEST_F(MorphologyTest, Erode) {
   };
   EXPECT_THAT(y_cpu_, ::testing::Pointwise(::testing::FloatNearPointwise(),
                                            expected_y));
-}
-
-int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
-  ::testing::InitGoogleTest(&argc, argv);
-  google::ParseCommandLineFlags(&argc, &argv, true);
-  return RUN_ALL_TESTS();
 }
