@@ -21,14 +21,17 @@ FIND_PACKAGE(Glog REQUIRED)
 FIND_PACKAGE(GTest)
 FIND_PACKAGE(GMock)
 
+# C++ compiler flags
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D_FORCE_INLINES")
-SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC")
 
-FIND_PROGRAM(IWYU_PATH NAMES iwyu include-what-you-use)
-IF(IWYU_PATH)
-  MESSAGE(STATUS "Found IWYU = ${IWYU_PATH}")
-ENDIF()
+# CUDA compiler flags
+SET(CUDA_PROPAGATE_HOST_FLAGS OFF)
+SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --std c++11 -Xcompiler -fPIC,-D_FORCE_INLINES")
 
+
+# ------------------------------------------------------------------------------
+# C++ Library
+# ------------------------------------------------------------------------------
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 
 CUDA_ADD_LIBRARY(affine affine.cu affine.h utils.h STATIC)
@@ -37,13 +40,16 @@ TARGET_LINK_LIBRARIES(affine ${GLOG_LIBRARIES})
 CUDA_ADD_LIBRARY(morphology morphology.cu morphology.h utils.h STATIC)
 TARGET_LINK_LIBRARIES(morphology ${GLOG_LIBRARIES})
 
-IF(IWYU_PATH AND VERSION VERSION_GREATER 3.2)
-  SET_PROPERTY(TARGET affine morphology PROPERTY
-  CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
-ENDIF()
 
+# ------------------------------------------------------------------------------
+# Add Torch bindings
+# ------------------------------------------------------------------------------
 ADD_SUBDIRECTORY(torch)
 
+
+# ------------------------------------------------------------------------------
+# Tests
+# ------------------------------------------------------------------------------
 IF(GTEST_FOUND AND GMOCK_FOUND)
   ADD_LIBRARY(base_test base_test.cc base_test.h utils.h)
   TARGET_LINK_LIBRARIES(base_test ${GLOG_LIBRARIES})
