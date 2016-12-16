@@ -19,10 +19,13 @@ dependencies = {
 }
 
 build = {
-  type = "command",
-  build_command = [[
-cmake -E make_directory build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$(LUAROCKS_PREFIX)" -DLUAROCKS_PREFIX="$(LUAROCKS_PREFIX)" -DCMAKE_INSTALL_PREFIX="$(PREFIX)" && $(MAKE)
-  ]],
-  platforms = {},
-  install_command = "cd build && $(MAKE) install"
+  type = "cmake",
+  variables = {
+    TORCH_ROOT = "$(LUA_BINDIR)/..",
+    WITH_LUAROCKS = "ON",
+    CMAKE_BUILD_TYPE = "RELEASE",
+    CMAKE_INSTALL_PREFIX = "$(PREFIX)",
+    INST_LIBDIR="$(LIBDIR)",
+    INST_LUADIR="$(LUADIR)",
+  }
 }
