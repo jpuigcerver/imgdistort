@@ -1,0 +1,10 @@
+IF(IPP_FOUND AND WITH_IPP)
+  ADD_LIBRARY(affine_cpu affine_cpu.cc affine_cpu_ipp.cc)
+  TARGET_LINK_LIBRARIES(affine_cpu ${IPP_LIBRARIES})
+ELSE()
+  ADD_LIBRARY(affine_cpu affine_cpu.cc affine_cpu_generic.cc)
+ENDIF()
+
+IF(CUDA_FOUND AND WITH_CUDA)
+  CUDA_ADD_LIBRARY(affine_gpu affine_gpu.cu)
+ENDIF()
