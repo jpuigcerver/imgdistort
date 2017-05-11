@@ -1,5 +1,4 @@
 # imgdistort
-
 Library to perform image distortions on the GPU and CPU.
 
 ## Available distortions
@@ -27,7 +26,6 @@ Library to perform image distortions on the GPU and CPU.
   build the tests.
   
 ## Installation 
-
 You can build and install the library using CMake, just clone the repository, 
 create a build directory and build it:
 
@@ -66,10 +64,7 @@ and you will need to enable the test build:
 cmake -DGTEST_ROOT=/path/to/gtest -DGMOCK_ROOT=/path/to/gmock -DWITH_TESTS=ON ..
 ```
 
- 
-
 ## Image format
-
 Pixel intensities can be represented by different data types:
 - unsigned 8-bit integer (uint8_t)
 - unsigned 16-bit integer (uint16_t)
