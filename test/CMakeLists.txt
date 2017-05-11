@@ -1,37 +1,57 @@
 FIND_PACKAGE(GTest)
 FIND_PACKAGE(GMock)
-##FIND_PACKAGE(ImageMagick COMPONENTS Magick++ REQUIRED)
 
-IF(GTEST_FOUND AND GMOCK_FOUND)
-  #INCLUDE_DIRECTORIES(${ImageMagick_Magick++_INCLUDE_DIRS})
-  #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAGICKCORE_HDRI_ENABLE=0 -DMAGICKCORE_QUANTUM_DEPTH=16")
-  # ADD_LIBRARY(base_test base_test.cc base_test.h utils.h)
-  # TARGET_LINK_LIBRARIES(base_test ${GLOG_LIBRARIES})
+IF(WITH_TESTS)
+  IF(GTEST_FOUND AND GMOCK_FOUND)
+    ########################################################################
+    ## Affine tests
+    ########################################################################
+    ADD_LIBRARY(affine_base_test_cpu
+      affine_base_test_cpu.cc affine_base_test_cpu.h)
+    ADD_IWYU_TO_TARGET(affine_base_test_cpu)
 
-  #ADD_EXECUTABLE(affine_test affine_test.cc)
-  #TARGET_LINK_LIBRARIES(affine_test
-  #  affine_cpu ${IPP_LIBRARIES} ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
-  #TARGET_LINK_LIBRARIES(affine_test ${ImageMagick_Magick++_LIBRARY})
-  #   affine base_test ${GLOG_LIBRARIES} ${GMOCK_MAIN_LIBRARIES})
-  # GTEST_ADD_TESTS(affine_test "" affine_test.cc)
+    ADD_EXECUTABLE(affine_cpu_test affine_cpu_test.cc)
+    TARGET_LINK_LIBRARIES(affine_cpu_test
+      affine_base_test_cpu
+      affine_cpu
+      ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
+    ADD_TEST(affine_cpu_test affine_cpu_test)
+    ADD_IWYU_TO_TARGET(affine_cpu_test)
 
-  # ADD_EXECUTABLE(morphology_test morphology_test.cc utils.h)
-  # TARGET_LINK_LIBRARIES(morphology_test
-  #   morphology base_test ${GLOG_LIBRARIES} ${GMOCK_MAIN_LIBRARIES})
-  # GTEST_ADD_TESTS(morphology_test "" morphology_test.cc)
+    IF (CUDA_FOUND AND WITH_CUDA)
+      CUDA_ADD_LIBRARY(affine_base_test_gpu
+	affine_base_test_gpu.cu affine_base_test_gpu.h)
+      TARGET_LINK_LIBRARIES(affine_base_test_gpu affine_base_test_cpu)
+      ADD_IWYU_TO_TARGET(affine_base_test_gpu)
+
+      CUDA_ADD_EXECUTABLE(affine_gpu_test affine_gpu_test.cu)
+      TARGET_LINK_LIBRARIES(affine_gpu_test
+	affine_gpu affine_base_test_gpu
+	${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
+      ADD_TEST(affine_gpu_test affine_gpu_test)
+      ADD_IWYU_TO_TARGET(affine_gpu_test)
+    ENDIF()
 
 
-  ADD_EXECUTABLE(affine_cpu_ipp_test
-    affine_cpu_ipp_test.cc ../src/affine_cpu_ipp.cc)
-  TARGET_LINK_LIBRARIES(affine_cpu_ipp_test ${GLOG_LIBRARIES} ${IPP_LIBRARIES}
-    ${GMOCK_MAIN_LIBRARIES})
-  TARGET_INCLUDE_DIRECTORIES(affine_cpu_ipp_test PRIVATE ${IPP_INCLUDE_DIRS})
+    ########################################################################
+    ## Morphology tests
+    ########################################################################
+    ADD_EXECUTABLE(morphology_cpu_test morphology_cpu_test.cc)
+    TARGET_LINK_LIBRARIES(morphology_cpu_test
+      morphology_cpu
+      ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
+    ADD_TEST(morphology_cpu_test morphology_cpu_test)
+    ADD_IWYU_TO_TARGET(morphology_cpu_test)
 
-
-  # IF(IWYU_PATH AND VERSION VERSION_GREATER 3.2)
-  #   SET_PROPERTY(TARGET affine_test morphology_test PROPERTY
-  #   CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
-  # ENDIF()
-ELSE()
-  MESSAGE(STATUS "Missing GMock or GTest, tests will not be compiled!")
+    IF (CUDA_FOUND AND WITH_CUDA)
+      ADD_EXECUTABLE(morphology_gpu_test morphology_gpu_test.cc)
+      TARGET_LINK_LIBRARIES(morphology_gpu_test
+	morphology_gpu
+	${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
+      ADD_TEST(morphology_gpu_test morphology_gpu_test)
+      ADD_IWYU_TO_TARGET(morphology_gpu_test)
+    ENDIF()
+  ELSE()
+    MESSAGE(STATUS "Missing GMock or GTest, tests will not be compiled!")
+  ENDIF()
 ENDIF()
