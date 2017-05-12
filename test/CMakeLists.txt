@@ -44,7 +44,7 @@ IF(WITH_TESTS)
     ADD_IWYU_TO_TARGET(morphology_cpu_test)
 
     IF (CUDA_FOUND AND WITH_CUDA)
-      ADD_EXECUTABLE(morphology_gpu_test morphology_gpu_test.cc)
+      CUDA_ADD_EXECUTABLE(morphology_gpu_test morphology_gpu_test.cu)
       TARGET_LINK_LIBRARIES(morphology_gpu_test
 	morphology_gpu
 	${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})

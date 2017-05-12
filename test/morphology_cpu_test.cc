@@ -11,8 +11,7 @@ typedef std::tuple<int, int> TestArgs;
   class MorphologyCPUTest_##DESC :                                      \
       public ::testing::TestWithParam<TestArgs> {};                     \
                                                                         \
-  TEST_P(MorphologyCPUTest_##DESC, Test) {                              \
-                                                                        \
+  TEST_P(MorphologyCPUTest_##DESC, Idempotent) {                        \
   }                                                                     \
   INSTANTIATE_TEST_CASE_P(                                              \
       TestParameters_##DESC , MorphologyCPUTest_##DESC,                 \
