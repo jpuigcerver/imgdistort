@@ -130,11 +130,11 @@ static inline void morphology_nchw(
     CHECK_GT(Mh, 0); CHECK_GT(Mw, 0);
     // GPU implementation restrictions
     CHECK_LE(Mh, MAX_KERNEL_SIZE)
-      << "GPU implementation cannot handle a morphology operation with a kernel "
-      << "size larger than " << MAX_KERNEL_SIZE << " pixels";
+      << "GPU implementation cannot handle a morphology operation with "
+      << "a kernel size larger than " << MAX_KERNEL_SIZE << " pixels";
     CHECK_LE(Mw, MAX_KERNEL_SIZE)
-      << "GPU implementation cannot handle a morphology operation with a kernel "
-      << "size larger than " << MAX_KERNEL_SIZE << " pixels";
+      << "GPU implementation cannot handle a morphology operation with "
+      << "a kernel size larger than " << MAX_KERNEL_SIZE << " pixels";
     kernel_morphology_nchw<T, F><<<grid_size, block_size, 0, stream>>>
         (N, C, H, W, M, Mn, Mh, Mw, src, sp, dst, dp, padv);
     CHECK_LAST_CUDA_CALL();
@@ -157,11 +157,11 @@ static inline void morphology_nchw(
       CHECK_GT(Mh, 0); CHECK_GT(Mw, 0);
       // GPU implementation restrictions
       CHECK_LE(Mh, MAX_KERNEL_SIZE)
-        << "GPU implementation cannot handle a morphology operation with a kernel "
-        << "size larger than " << MAX_KERNEL_SIZE << " pixels";
+        << "GPU implementation cannot handle a morphology operation with "
+        << "a kernel size larger than " << MAX_KERNEL_SIZE << " pixels";
       CHECK_LE(Mw, MAX_KERNEL_SIZE)
-        << "GPU implementation cannot handle a morphology operation with a kernel "
-        << "size larger than " << MAX_KERNEL_SIZE << " pixels";
+        << "GPU implementation cannot handle a morphology operation with "
+        << "a kernel size larger than " << MAX_KERNEL_SIZE << " pixels";
       kernel_morphology_nchw<T, F><<<grid_size, block_size, 0, stream>>>(
           1, C, H, W, M + offset_M, 1, Mh, Mw, src + offset_S, sp,
           dst + offset_D, dp, padv);
@@ -189,3 +189,32 @@ DEFINE_IMPLEMENTATION(double)
 
 }  // namespace gpu
 }  // namespace imgdistort
+
+#define DEFINE_C_FUNCTION(DESC, TYPE)                               \
+  extern "C" void imgdistort_gpu_dilate_nchw_ ## DESC  (            \
+      const int N, const int C, const int H, const int W,           \
+      const uint8_t* M, const int* Ms, const int Mn,                \
+      const TYPE* src, const int sp, TYPE* dst, const int dp,       \
+      cudaStream_t stream) {                                        \
+    imgdistort::gpu::dilate_nchw<TYPE>(                             \
+        N, C, H, W, M, Ms, Mn, src, sp, dst, dp, stream);           \
+  }                                                                 \
+  extern "C" void imgdistort_gpu_erode_nchw_ ## DESC  (             \
+      const int N, const int C, const int H, const int W,           \
+      const uint8_t* M, const int* Ms, const int Mn,                \
+      const TYPE* src, const int sp, TYPE* dst, const int dp,       \
+      cudaStream_t stream) {                                        \
+    imgdistort::gpu::erode_nchw<TYPE>(                              \
+        N, C, H, W, M, Ms, Mn, src, sp, dst, dp, stream);           \
+  }
+
+DEFINE_C_FUNCTION(s8,  int8_t)
+DEFINE_C_FUNCTION(s16, int16_t)
+DEFINE_C_FUNCTION(s32, int32_t)
+DEFINE_C_FUNCTION(s64, int64_t)
+DEFINE_C_FUNCTION(u8,  uint8_t)
+DEFINE_C_FUNCTION(u16, uint16_t)
+DEFINE_C_FUNCTION(u32, uint32_t)
+DEFINE_C_FUNCTION(u64, uint64_t)
+DEFINE_C_FUNCTION(f32, float)
+DEFINE_C_FUNCTION(f64, double)

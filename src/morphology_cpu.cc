@@ -58,3 +58,30 @@ DEFINE_GENERIC_IMPLEMENTATION(double)
 
 }  // namespace cpu
 }  // namespace imgdistort
+
+#define DEFINE_C_FUNCTION(DESC, TYPE)                               \
+  extern "C" void imgdistort_cpu_dilate_nchw_ ## DESC  (            \
+      const int N, const int C, const int H, const int W,           \
+      const uint8_t* M, const int* Ms, const int Mn,                \
+      const TYPE* src, const int sp, TYPE* dst, const int dp) {     \
+    imgdistort::cpu::dilate_nchw<TYPE>(                             \
+        N, C, H, W, M, Ms, Mn, src, sp, dst, dp);                   \
+  }                                                                 \
+  extern "C" void imgdistort_cpu_erode_nchw_ ## DESC  (             \
+      const int N, const int C, const int H, const int W,           \
+      const uint8_t* M, const int* Ms, const int Mn,                \
+      const TYPE* src, const int sp, TYPE* dst, const int dp) {     \
+    imgdistort::cpu::erode_nchw<TYPE>(                              \
+        N, C, H, W, M, Ms, Mn, src, sp, dst, dp);                   \
+  }
+
+DEFINE_C_FUNCTION(s8,  int8_t)
+DEFINE_C_FUNCTION(s16, int16_t)
+DEFINE_C_FUNCTION(s32, int32_t)
+DEFINE_C_FUNCTION(s64, int64_t)
+DEFINE_C_FUNCTION(u8,  uint8_t)
+DEFINE_C_FUNCTION(u16, uint16_t)
+DEFINE_C_FUNCTION(u32, uint32_t)
+DEFINE_C_FUNCTION(u64, uint64_t)
+DEFINE_C_FUNCTION(f32, float)
+DEFINE_C_FUNCTION(f64, double)

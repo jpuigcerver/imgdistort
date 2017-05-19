@@ -4,11 +4,8 @@
 #define MORPHOLOGY_TEST_IMG_W 25
 #define MORPHOLOGY_TEST_IMG_H 20
 
-#ifdef __CUDACC__
-#include "morphology_base_test_gpu.h"
-#endif  // __CUDACC__
-
 #include <gtest/gtest.h>
+#include "base_test.h"
 
 namespace imgdistort {
 namespace testing {
@@ -47,6 +44,52 @@ static const TestImage original_image2{
   "\0\0\330\0\0X\0D\0\14\0M\225%\32\0u\0\0\0G\0%\0.\0\13\0X\0\377%=\0\0\0(["
   "\341\0$\0\0\0\252\324\4F\334\0E\310r\260y;\0""2\245",
 };
+
+
+
+
+
+template <class I>
+class MorphologyTest : public ::testing::Test { };
+TYPED_TEST_CASE_P(MorphologyTest);
+
+
+TYPED_TEST_P(MorphologyTest, Idempotent) {
+  typedef TypeParam Interface;
+  typedef typename Interface::Allocator Allocator;
+  typedef typename Interface::Type T;
+
+  const int S[] = {1, 3, 5, 7};
+  const int N = 4, C = 3, H = 29, W = 31;
+  for (int i = 0; i < 4; ++i) {
+    const int Ms[] = {S[i], 2 * S[i] + 1};
+    std::vector<uint8_t> m(Ms[0] * Ms[1]); m[Ms[0] * Ms[1] / 2] = 1;
+    const uint8_t* mask = Allocator::CloneToDevice(m);
+    const T* src = Allocator::template GenerateRandom<T>(N * C * H * W);
+    T* dst = Allocator::template Allocate<T>(N * C * H * W);
+    Interface::Dilate(N, C, H, W, mask, Ms, 1, src, W, dst, W);
+    {
+      const std::vector<T> src_host =
+          Allocator::CloneToHostVec(N * C * H * W, src);
+      const std::vector<T> dst_host =
+          Allocator::CloneToHostVec(N * C * H * W, dst);
+      ASSERT_EQ(dst_host, src_host);
+    }
+    Interface::Erode(N, C, H, W, mask, Ms, 1, src, W, dst, W);
+    {
+      const std::vector<T> src_host =
+          Allocator::CloneToHostVec(N * C * H * W, src);
+      const std::vector<T> dst_host =
+          Allocator::CloneToHostVec(N * C * H * W, dst);
+      ASSERT_EQ(dst_host, src_host);
+    }
+    Allocator::Deallocate(mask);
+    Allocator::Deallocate(src);
+    Allocator::Deallocate(dst);
+  }
+}
+
+REGISTER_TYPED_TEST_CASE_P(MorphologyTest, Idempotent);
 
 }  // namespace testing
 }  // namespace imgdistort

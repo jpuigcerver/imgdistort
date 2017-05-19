@@ -2,36 +2,35 @@
 #include <vector>
 
 #include <gtest/gtest.h>  // IWYU pragma: keep
-#include <imgdistort/morphology_cpu.h>
+#include <imgdistort/morphology_gpu.h>
 
 #include "morphology_test.h"
-#include "device_allocator_cpu.h"
+#include "device_allocator_gpu.h"
 
 namespace imgdistort {
 namespace testing {
-namespace cpu {
+namespace gpu {
 
 // Wrapper around the C++ interface
 //
 template <typename T>
-class CppInterface {
+class MorphologyGpuCppInterface {
  public:
   typedef T Type;
-  typedef DeviceAllocator<CPU> Allocator;
+  typedef DeviceAllocator<GPU> Allocator;
 
   static void Dilate(const int N, const int C, const int H, const int W,
                      const uint8_t *M, const int *Ms, const int Mn,
                      const T *src, const int sp, T *dst, const int dp) {
-    ::imgdistort::cpu::dilate_nchw(N, C, H, W, M, Ms, Mn, src, sp, dst, dp);
+    ::imgdistort::gpu::dilate_nchw(N, C, H, W, M, Ms, Mn, src, sp, dst, dp);
   }
 
   static void Erode(const int N, const int C, const int H, const int W,
                     const uint8_t *M, const int *Ms, const int Mn,
                     const T *src, const int sp, T *dst, const int dp) {
-    ::imgdistort::cpu::erode_nchw(N, C, H, W, M, Ms, Mn, src, sp, dst, dp);
+    ::imgdistort::gpu::erode_nchw(N, C, H, W, M, Ms, Mn, src, sp, dst, dp);
   }
 };
-
 
 // Wrapper around the C interface
 //
@@ -39,7 +38,7 @@ template <typename T>
 class CInterface {
  public:
   typedef T Type;
-  typedef DeviceAllocator<CPU> Allocator;
+  typedef DeviceAllocator<GPU> Allocator;
 
   static void Dilate(const int N, const int C, const int H, const int W,
                      const uint8_t *M, const int *Ms, const int Mn,
@@ -56,7 +55,7 @@ class CInterface {
       const int N, const int C, const int H, const int W,             \
       const uint8_t *M, const int *Ms, const int Mn,                  \
       const TYPE *src, const int sp, TYPE *dst, const int dp) {       \
-    imgdistort_cpu_dilate_nchw_##DESC(                                \
+    imgdistort_gpu_dilate_nchw_##DESC(                                \
         N, C, H, W, M, Ms, Mn, src, sp, dst, dp);                     \
   }                                                                   \
   template <>                                                         \
@@ -64,7 +63,7 @@ class CInterface {
       const int N, const int C, const int H, const int W,             \
       const uint8_t *M, const int *Ms, const int Mn,                  \
       const TYPE *src, const int sp, TYPE *dst, const int dp) {       \
-    imgdistort_cpu_erode_nchw_##DESC(                                 \
+    imgdistort_gpu_erode_nchw_##DESC(                                 \
         N, C, H, W, M, Ms, Mn, src, sp, dst, dp);                     \
   }
 
@@ -78,31 +77,31 @@ DEFINE_C_SPECIALIZATION(u64, uint64_t)
 DEFINE_C_SPECIALIZATION(f32, float)
 DEFINE_C_SPECIALIZATION(f64, double)
 
-}  // namespace cpu
+}  // namespace gpu
 
 typedef ::testing::Types<
-  cpu::CppInterface<int16_t>,
-  cpu::CppInterface<int32_t>,
-  cpu::CppInterface<int64_t>,
-  cpu::CppInterface<uint8_t>,
-  cpu::CppInterface<uint16_t>,
-  cpu::CppInterface<uint32_t>,
-  cpu::CppInterface<uint64_t>,
-  cpu::CppInterface<float>,
-  cpu::CppInterface<double> > CppTypes;
-INSTANTIATE_TYPED_TEST_CASE_P(CpuCpp, MorphologyTest, CppTypes);
+    gpu::MorphologyGpuCppInterface<int16_t>,
+    gpu::MorphologyGpuCppInterface<int32_t>,
+    gpu::MorphologyGpuCppInterface<int64_t>,
+    gpu::MorphologyGpuCppInterface<uint8_t>,
+    gpu::MorphologyGpuCppInterface<uint16_t>,
+    gpu::MorphologyGpuCppInterface<uint32_t>,
+    gpu::MorphologyGpuCppInterface<uint64_t>,
+    gpu::MorphologyGpuCppInterface<float>,
+    gpu::MorphologyGpuCppInterface<double> > CppTypes;
+INSTANTIATE_TYPED_TEST_CASE_P(Gpu, MorphologyTest, CppTypes);
 
 typedef ::testing::Types<
-  cpu::CInterface<int16_t>,
-  cpu::CInterface<int32_t>,
-  cpu::CInterface<int64_t>,
-  cpu::CInterface<uint8_t>,
-  cpu::CInterface<uint16_t>,
-  cpu::CInterface<uint32_t>,
-  cpu::CInterface<uint64_t>,
-  cpu::CInterface<float>,
-  cpu::CInterface<double> > CTypes;
-INSTANTIATE_TYPED_TEST_CASE_P(CpuC, MorphologyTest, CTypes);
-
+    gpu::CInterface<int16_t>,
+    gpu::CInterface<int32_t>,
+    gpu::CInterface<int64_t>,
+    gpu::CInterface<uint8_t>,
+    gpu::CInterface<uint16_t>,
+    gpu::CInterface<uint32_t>,
+    gpu::CInterface<uint64_t>,
+    gpu::CInterface<float>,
+    gpu::CInterface<double> > CTypes;
+INSTANTIATE_TYPED_TEST_CASE_P(GpuC, MorphologyTest, CTypes);
 }  // namespace testing
 }  // namespace imgdistort
+
