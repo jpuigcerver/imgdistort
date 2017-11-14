@@ -7,7 +7,7 @@
 namespace testing {
 
 MATCHER(FloatNearPointwise, "") {
-  return Matcher<float>(FloatEq(get<1>(arg))).Matches(get<0>(arg));
+  return Matcher<float>(FloatEq(std::get<1>(arg))).Matches(std::get<0>(arg));
 }
 
 }  // namespace testing
