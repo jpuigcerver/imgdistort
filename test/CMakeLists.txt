@@ -13,7 +13,7 @@ IF(WITH_TESTS)
     ADD_EXECUTABLE(affine_cpu_test affine_cpu_test.cc)
     TARGET_LINK_LIBRARIES(affine_cpu_test
       affine_base_test_cpu
-      affine_cpu
+      affine_cpu_static
       ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
     ADD_TEST(affine_cpu_test affine_cpu_test)
     ADD_IWYU_TO_TARGET(affine_cpu_test)
@@ -26,7 +26,7 @@ IF(WITH_TESTS)
 
       CUDA_ADD_EXECUTABLE(affine_gpu_test affine_gpu_test.cu)
       TARGET_LINK_LIBRARIES(affine_gpu_test
-        affine_gpu affine_base_test_gpu
+        affine_gpu_static affine_base_test_gpu
         ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
       ADD_TEST(affine_gpu_test affine_gpu_test)
       ADD_IWYU_TO_TARGET(affine_gpu_test)
@@ -38,7 +38,7 @@ IF(WITH_TESTS)
     ########################################################################
     ADD_EXECUTABLE(morphology_cpu_test morphology_cpu_test.cc)
     TARGET_LINK_LIBRARIES(morphology_cpu_test
-      morphology_cpu
+      morphology_cpu_static
       ${GLOG_LIBRARIES} ${GMOCK_MAIN_LIBRARIES} ${GTEST_LIBRARIES})
     ADD_TEST(morphology_cpu_test morphology_cpu_test)
     ADD_IWYU_TO_TARGET(morphology_cpu_test)
@@ -46,7 +46,7 @@ IF(WITH_TESTS)
     IF (CUDA_FOUND AND WITH_CUDA)
       ADD_EXECUTABLE(morphology_gpu_test morphology_gpu_test.cc)
       TARGET_LINK_LIBRARIES(morphology_gpu_test
-        morphology_gpu
+        morphology_gpu_static
         ${GLOG_LIBRARIES} ${GMOCK_MAIN_LIBRARIES} ${GTEST_LIBRARIES})
       ADD_TEST(morphology_gpu_test morphology_gpu_test)
       ADD_IWYU_TO_TARGET(morphology_gpu_test)

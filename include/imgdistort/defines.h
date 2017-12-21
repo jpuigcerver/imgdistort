@@ -1,12 +1,16 @@
 #ifndef IMGDISTORT_DEFINES_H_
 #define IMGDISTORT_DEFINES_H_
 
+#ifdef WITH_IPP
+#include <ipp.h>
+#endif
+
 #define DIV_UP(x, y) ((x) == 0 ? 0 : 1 + ((x) - 1) / (y))
 
-#define CHECK_IPP_CALL(STATUS)                          \
-  do {                                                  \
-    const IppStatus status = (STATUS);                  \
-    CHECK_EQ(status, ippStsNoErr);                      \
+#define CHECK_IPP_CALL(STATUS)                                          \
+  do {                                                                  \
+    const IppStatus status = (STATUS);                                  \
+    CHECK_EQ(status, ippStsNoErr) << ippGetStatusString(status);        \
   } while(0)
 
 #define CHECK_NPP_CALL(STATUS)                  \

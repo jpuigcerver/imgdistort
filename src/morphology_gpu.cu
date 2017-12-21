@@ -172,7 +172,9 @@ static inline void morphology_nchw(
     }
     for (int n = 0; n < N; ++n) {
       CHECK_CUDA_CALL(cudaStreamSynchronize(streams[n]));
+      CHECK_CUDA_CALL(cudaStreamDestroy(streams[n]));
     }
+    delete [] streams;
   }
 }
 

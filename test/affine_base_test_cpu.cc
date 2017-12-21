@@ -236,9 +236,9 @@ static const TestImage affine2_image = {
 template<typename T>
 std::vector<T> ImageInit(const TestImage &image) {
   std::vector<T> vimage(4 * image.height * image.width);
-  for (int c = 0, i = 0; c < 4; ++c) {
-    for (int y = 0; y < image.height; ++y) {
-      for (int x = 0; x < image.width; ++x, ++i) {
+  for (size_t c = 0, i = 0; c < 4; ++c) {
+    for (size_t y = 0; y < image.height; ++y) {
+      for (size_t x = 0; x < image.width; ++x, ++i) {
         vimage[i] = image.pixel_data[y * image.width * 4 +
                                      x * 4 + c];
       }
