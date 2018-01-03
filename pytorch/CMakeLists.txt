@@ -3,8 +3,6 @@ IF(PYTORCH_FOUND AND WITH_PYTORCH)
   SET(_EXTERNAL_DIRS)
 
   IF(CUDA_FOUND AND WITH_CUDA)
-    INCLUDE_DIRECTORIES("${PYTORCH_INCLUDE_DIR}/TH")
-    INCLUDE_DIRECTORIES("${PYTORCH_INCLUDE_DIR}/THC")
     CUDA_ADD_LIBRARY(imgdistort_ STATIC
       ../include/imgdistort/affine_cpu.h
       ../include/imgdistort/affine_gpu.h
@@ -15,14 +13,18 @@ IF(PYTORCH_FOUND AND WITH_PYTORCH)
       src/binding_gpu.h
       src/binding_gpu.cu
       src/binding_cpu.cc)
+    TARGET_INCLUDE_DIRECTORIES(imgdistort_
+      PRIVATE "${PYTORCH_INCLUDE_DIR}/TH"
+      PRIVATE "${PYTORCH_INCLUDE_DIR}/THC")
   ELSE()
-    INCLUDE_DIRECTORIES("${PYTORCH_INCLUDE_DIR}/TH")
     ADD_LIBRARY(imgdistort_ STATIC
       ../include/imgdistort/affine_cpu.h
       ../include/imgdistort/morphology_cpu.h
       src/binding_common.h
       src/binding_cpu.h
       src/binding_cpu.cc)
+    TARGET_INCLUDE_DIRECTORIES(imgdistort_
+      PRIVATE "${PYTORCH_INCLUDE_DIR}/TH")
   ENDIF(CUDA_FOUND AND WITH_CUDA)
 
   # Dependency with the wrapper code.
@@ -59,8 +61,9 @@ IF(PYTORCH_FOUND AND WITH_PYTORCH)
   LIST(APPEND _EXTERNAL_LIBS ${CMAKE_THREAD_LIBS_INIT})
 
   # Add include directories needed for the Python extension compilation.
-  GET_PROPERTY(_EXTERNAL_DIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    PROPERTY INCLUDE_DIRECTORIES)
+  GET_PROPERTY(_EXTERNAL_DIRS TARGET imgdistort_ PROPERTY INCLUDE_DIRECTORIES)
+  #GET_PROPERTY(_EXTERNAL_DIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  #  PROPERTY INCLUDE_DIRECTORIES)
 
   SET(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
   SET(SETUP_PY "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
@@ -85,7 +88,4 @@ IF(PYTORCH_FOUND AND WITH_PYTORCH)
     INSTALL(
       CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install)")
   ENDIF(PYTHON_SETUP_PREFIX)
-
-
-
 ENDIF(PYTORCH_FOUND AND WITH_PYTORCH)

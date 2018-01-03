@@ -13,26 +13,41 @@ extern "C" {
 
 namespace imgdistort {
 namespace pytorch {
+namespace cpu {
 
 template <typename T>
-inline void wrap_affine_call(
-    const int N, const int C, const int H, const int W,
-    const double* M, const int Mn, const T* src, T* dst) {
-  imgdistort::cpu::affine_nchw<T>(N, C, H, W, M, Mn, src, 0, dst, 0);
-}
+class AffineCaller : public ::imgdistort::pytorch::AffineCaller<T> {
+ public:
+  void operator()(
+      const int N, const int C, const int H, const int W,
+      const double* M, const int Mn, const T* src, T* dst) const override {
+    ::imgdistort::cpu::affine_nchw<T>(N, C, H, W, M, Mn, src, W, dst, W);
+  };
+};
 
-template <MorphOp op, typename DTYPE>
-inline void wrap_morph_call(
-    const int N, const int C, const int H, const int W,
-    const uint8_t* M, const int* Ms, const int Mn,
-    const DTYPE* src, DTYPE* dst) {
-  if (op == DILATE) {
-    imgdistort::cpu::dilate_nchw<DTYPE>(N, C, H, W, M, Ms, Mn, src, 0, dst, 0);
-  } else {
-    imgdistort::cpu::erode_nchw<DTYPE>(N, C, H, W, M, Ms, Mn, src, 0, dst, 0);
+template <typename T>
+class DilateCaller : public ::imgdistort::pytorch::MorphologyCaller<T> {
+ public:
+  void operator()(
+      const int N, const int C, const int H, const int W,
+      const uint8_t* M, const int* Ms, const int Mn,
+      const T* src, T* dst) const {
+    ::imgdistort::cpu::dilate_nchw<T>(N, C, H, W, M, Ms, Mn, src, W, dst, W);
   }
-}
+};
 
+template <typename T>
+class ErodeCaller : public ::imgdistort::pytorch::MorphologyCaller<T> {
+ public:
+  void operator()(
+      const int N, const int C, const int H, const int W,
+      const uint8_t* M, const int* Ms, const int Mn,
+      const T* src, T* dst) const {
+    ::imgdistort::cpu::erode_nchw<T>(N, C, H, W, M, Ms, Mn, src, W, dst, W);
+  }
+};
+
+}  // namespace cpu
 }  // namespace pytorch
 }  // namespace imgdistort
 

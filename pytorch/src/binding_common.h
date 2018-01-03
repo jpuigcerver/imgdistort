@@ -6,21 +6,26 @@
 namespace imgdistort {
 namespace pytorch {
 
-enum MorphOp { DILATE = 0, ERODE = 1};
+template <typename T>
+class AffineCaller {
+ public:
+  virtual void operator()(
+      const int N, const int C, const int H, const int W,
+      const double* M, const int Mn, const T* src, T* dst) const = 0;
+};
 
-template <typename DTYPE>
-inline void wrap_affine_call(
-    const int N, const int C, const int H, const int W,
-    const double* M, const int Mn, const DTYPE* src, DTYPE* dst);
-
-template <MorphOp op, typename DTYPE>
-inline void wrap_morph_call(
-    const int N, const int C, const int H, const int W,
-    const uint8_t* M, const int* Ms, const int Mn,
-    const DTYPE* src, DTYPE* dst);
+template <typename T>
+class MorphologyCaller {
+ public:
+  virtual void operator()(
+      const int N, const int C, const int H, const int W,
+      const uint8_t* M, const int* Ms, const int Mn,
+      const T* src, T* dst) const = 0;
+};
 
 template <typename DTYPE, typename MTYPE, typename TTYPE>
-inline void imgdistort_affine_nchw(const MTYPE* m, const TTYPE* x, TTYPE* y) {
+inline void imgdistort_affine_nchw(const MTYPE* m, const TTYPE* x, TTYPE* y,
+                                   const AffineCaller<DTYPE>& caller) {
   assert(m->nDimension == 2 || m->nDimension == 3);
   assert(x->nDimension == 4);
   const int N = x->size[0];
@@ -37,12 +42,13 @@ inline void imgdistort_affine_nchw(const MTYPE* m, const TTYPE* x, TTYPE* y) {
   const double* m_ptr = m->storage->data + m->storageOffset;
   const DTYPE* x_ptr = x->storage->data + x->storageOffset;
   DTYPE* y_ptr = y->storage->data + y->storageOffset;
-  wrap_affine_call<DTYPE>(N, C, H, W, m_ptr, Mn, x_ptr, y_ptr);
+  caller(N, C, H, W, m_ptr, Mn, x_ptr, y_ptr);
 }
 
-template <MorphOp op, typename DTYPE, typename MTYPE, typename TTYPE>
+template <typename DTYPE, typename MTYPE, typename TTYPE>
 inline void imgdistort_morph_nchw(
-    const MTYPE* m, const THIntTensor* ms, const TTYPE* x, TTYPE* y) {
+    const MTYPE* m, const THIntTensor* ms, const TTYPE* x, TTYPE* y,
+    const MorphologyCaller<DTYPE>& caller) {
   assert(ms->nDimension == 2);
   assert(x->nDimension == 4);
   const int N = x->size[0];
@@ -66,7 +72,7 @@ inline void imgdistort_morph_nchw(
   const DTYPE* x_ptr = x->storage->data + x->storageOffset;
   DTYPE* y_ptr = y->storage->data + y->storageOffset;
   const uint8_t* m_ptr = m->storage->data + m->storageOffset;
-  wrap_morph_call<op, DTYPE>(N, C, H, W, m_ptr, ms_ptr, Mn, x_ptr, y_ptr);
+  caller(N, C, H, W, m_ptr, ms_ptr, Mn, x_ptr, y_ptr);
 }
 
 }  // namespace pytorch
@@ -76,24 +82,25 @@ inline void imgdistort_morph_nchw(
   void imgdistort_affine_nchw_##DEVICE##_##TSNAME(                      \
       const MTYPE* m, const TTYPE* x, TTYPE* y) {                       \
     ::imgdistort::pytorch::imgdistort_affine_nchw<DTYPE, MTYPE, TTYPE>( \
-         m, x, y);                                                      \
+         m, x, y,                                                       \
+         ::imgdistort::pytorch::DEVICE::AffineCaller<DTYPE>());         \
   }
 
 #define DEFINE_MORPHOLOGY_WRAPPER(DEVICE, TSNAME, DTYPE, MTYPE, TTYPE)  \
   void imgdistort_dilate_nchw_##DEVICE##_##TSNAME(                      \
       const MTYPE* m, const THIntTensor* ms, const TTYPE* x,            \
       TTYPE* y) {                                                       \
-    ::imgdistort::pytorch::imgdistort_morph_nchw<                       \
-        ::imgdistort::pytorch::DILATE, DTYPE, MTYPE, TTYPE>(            \
-        m, ms, x, y);                                                   \
+    ::imgdistort::pytorch::imgdistort_morph_nchw<DTYPE, MTYPE, TTYPE>(  \
+         m, ms, x, y,                                                   \
+         ::imgdistort::pytorch::DEVICE::DilateCaller<DTYPE>());         \
   }                                                                     \
                                                                         \
   void imgdistort_erode_nchw_##DEVICE##_##TSNAME(                       \
       const MTYPE* m, const THIntTensor* ms, const TTYPE* x,            \
       TTYPE* y) {                                                       \
-    ::imgdistort::pytorch::imgdistort_morph_nchw<                       \
-        ::imgdistort::pytorch::ERODE, DTYPE, MTYPE, TTYPE>(             \
-        m, ms, x, y);                                                   \
+    ::imgdistort::pytorch::imgdistort_morph_nchw<DTYPE, MTYPE, TTYPE>(  \
+         m, ms, x, y,                                                   \
+         ::imgdistort::pytorch::DEVICE::ErodeCaller<DTYPE>());          \
   }
 
 #endif  // IMGDISTORT_PYTORCH_SRC_BINDING_COMMON_H_

@@ -15,30 +15,46 @@ extern THCState* state;
 
 namespace imgdistort {
 namespace pytorch {
+namespace gpu {
 
 template <typename T>
-inline void wrap_affine_call(
-    const int N, const int C, const int H, const int W,
-    const double* M, const int Mn, const T* src, T* dst) {
-  cudaStream_t stream = THCState_getCurrentStream(state);
-  imgdistort::gpu::affine_nchw(N, C, H, W, M, Mn, src, 0, dst, 0, stream);
-}
+class AffineCaller : public ::imgdistort::pytorch::AffineCaller<T> {
+ public:
+  void operator()(
+      const int N, const int C, const int H, const int W,
+      const double* M, const int Mn, const T* src, T* dst) const override {
+    cudaStream_t stream = THCState_getCurrentStream(state);
+    ::imgdistort::gpu::affine_nchw(N, C, H, W, M, Mn, src, W, dst, W, stream);
+  };
+};
 
-template <MorphOp op, typename DTYPE>
-inline void wrap_morph_call(
-    const int N, const int C, const int H, const int W,
-    const uint8_t* M, const int* Ms, const int Mn,
-    const DTYPE* src, DTYPE* dst) {
-  cudaStream_t stream = THCState_getCurrentStream(state);
-  if (op == DILATE) {
-    imgdistort::gpu::dilate_nchw<DTYPE>(N, C, H, W, M, Ms, Mn, src, 0, dst, 0,
-                                        stream);
-  } else {
-    imgdistort::gpu::erode_nchw<DTYPE>(N, C, H, W, M, Ms, Mn, src, 0, dst, 0,
-                                       stream);
+template <typename T>
+class DilateCaller : public ::imgdistort::pytorch::MorphologyCaller<T> {
+ public:
+  void operator()(
+      const int N, const int C, const int H, const int W,
+      const uint8_t* M, const int* Ms, const int Mn,
+      const T* src, T* dst) const {
+    cudaStream_t stream = THCState_getCurrentStream(state);
+    ::imgdistort::gpu::dilate_nchw<T>(N, C, H, W, M, Ms, Mn, src, W, dst, W,
+                                      stream);
   }
-}
+};
 
+template <typename T>
+class ErodeCaller : public ::imgdistort::pytorch::MorphologyCaller<T> {
+ public:
+  void operator()(
+      const int N, const int C, const int H, const int W,
+      const uint8_t* M, const int* Ms, const int Mn,
+      const T* src, T* dst) const {
+    cudaStream_t stream = THCState_getCurrentStream(state);
+    ::imgdistort::gpu::erode_nchw<T>(N, C, H, W, M, Ms, Mn, src, W, dst, W,
+                                     stream);
+  }
+};
+
+}  // namespace gpu
 }  // namespace pytorch
 }  // namespace imgdistort
 
