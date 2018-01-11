@@ -86,7 +86,9 @@ def affine(x, m, y=None):
     y = y if y is not None else x.clone()
     assert len(x.size()) == 4, 'Tensor x must have 4 dimensions.'
     assert x.size() == y.size(), 'Tensor x and y must have the same size.'
-    assert m.size() == (2, 3), 'Size of affine matrix must be (2, 3).'
+    assert ((m.dim() == 3 and m.size()[1:] == (2, 3)) or
+            (m.dim() == 2 and m.size() == (2, 3))), (
+                'Size of affine tensor must be (2, 3) or (?, 2, 3).')
     is_cuda = True if x.is_cuda else False
     # Affine matrix must be a double tensor
     if is_cuda:

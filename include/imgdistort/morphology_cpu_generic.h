@@ -27,7 +27,7 @@ template <typename T, class F>
 void morphology_nchw_generic(
     const int N, const int C, const int H, const int W,
     const uint8_t* M, const int* Ms, const int Mn,
-    const T* src, const int sp, T* dst, const int dp, const T padv) {
+    const T* src, const int sp, T* dst, const int dp) {
   // Check image sizes
   CHECK_GT(N, 0); CHECK_GT(C, 0); CHECK_GT(H, 0);  CHECK_GT(W, 0);
   // Check transformation kernels
@@ -58,12 +58,14 @@ void morphology_nchw_generic(
         for (int x = 0; x < W; ++x) {
           const int Mh = Ms[2 * (Mn > 1 ? n : 0) + 0];
           const int Mw = Ms[2 * (Mn > 1 ? n : 0) + 1];
-          T tmp = padv;
+          T tmp = pixv(src + (n * C + c) * H * sp, sp, y, x);
           for (int ki = 0; ki < Mh; ++ki) {
             for (int kj = 0; kj < Mw; ++kj) {
-              if (M[M_offset[Mn > 1 ? n : 0] + ki * Mw + kj] != 0) {
-                tmp = F::f(tmp, pixv(src + (n * C + c) * H * sp, sp, H, W,
-                                     y + ki - Mh / 2, x + kj - Mw / 2, padv));
+              const int sy = y + ki - Mh / 2, sx = x + kj - Mw / 2;
+              if (sy >= 0 && sx >= 0 && sy < H && sx < W &&
+                  M[M_offset[Mn > 1 ? n : 0] + ki * Mw + kj] != 0) {
+                tmp = F::f(tmp, pixv(src + (n * C + c) * H * sp, sp,
+                                     y + ki - Mh / 2, x + kj - Mw / 2));
               }
             }
           }
@@ -79,9 +81,8 @@ void dilate_nchw_generic(
     const int N, const int C, const int H, const int W,
     const uint8_t* M, const int* Ms, const int Mn,
     const T* src, const int sp, T* dst, const int dp) {
-  constexpr T padv = std::numeric_limits<T>::lowest();
   morphology_nchw_generic<T, MaxFunctor<T>>(
-      N, C, H, W, M, Ms, Mn, src, sp, dst, dp, padv);
+      N, C, H, W, M, Ms, Mn, src, sp, dst, dp);
 }
 
 template <typename T>
@@ -89,9 +90,8 @@ void erode_nchw_generic(
     const int N, const int C, const int H, const int W,
     const uint8_t* M, const int* Ms, const int Mn,
     const T* src, const int sp, T* dst, const int dp) {
-  const T padv = std::numeric_limits<T>::max();
   morphology_nchw_generic<T, MinFunctor<T>>(
-      N, C, H, W, M, Ms, Mn, src, sp, dst, dp, padv);
+      N, C, H, W, M, Ms, Mn, src, sp, dst, dp);
 }
 
 }  // namespace cpu
