@@ -18,7 +18,7 @@ INCLUDE(my_macros)
 
 OPTION(WITH_CUDA "Compile with CUDA support" ON)
 OPTION(WITH_GLOG "Enable Google Log support" ON)
-OPTION(WITH_IPP "Compile with Intel IPP support" ON)
+OPTION(WITH_IPP "Compile with Intel IPP support" OFF)
 OPTION(WITH_IWYU "Compile with import-what-you-use information" OFF)
 OPTION(WITH_PYTORCH "Compile PyTorch wrapper" ON)
 OPTION(WITH_TESTS "Compile tests" ON)

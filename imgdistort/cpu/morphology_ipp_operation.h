@@ -49,11 +49,11 @@ class MorphologyOperation {
   Ipp8u* buffer_;
 
   inline IppStatus BorderInitialize(
-      const int roiWidth, const Ipp8u* pMask, IppiSize maskSize,
+      const int roiWidth, const Ipp8u* pMask, const IppiSize& maskSize,
       IppiMorphState* pMorphSpec, Ipp8u* pBuffer) const;
 
   inline IppStatus BorderGetSize(
-      const int roiWidth, IppiSize maskSize, int* pSpecSize,
+      const int roiWidth, const IppiSize& maskSize, int* pSpecSize,
       int* pBufferSize) const;
 };
 
@@ -77,7 +77,7 @@ class DilateOperation : public MorphologyOperation<T> {
 #define DEFINE_OPERATION_SPECIALIZATION(T, SNAME)                       \
   template <>                                                           \
   inline IppStatus MorphologyOperation<T>::BorderGetSize(               \
-      const int roiWidth, IppiSize maskSize, int* pSpecSize,            \
+      const int roiWidth, const IppiSize& maskSize, int* pSpecSize,     \
       int* pBufferSize) const {                                         \
     return ippiMorphologyBorderGetSize_##SNAME##_C1R(                   \
         roiWidth, maskSize, pSpecSize, pBufferSize);                    \
@@ -85,7 +85,7 @@ class DilateOperation : public MorphologyOperation<T> {
                                                                         \
   template <>                                                           \
   inline IppStatus MorphologyOperation<T>::BorderInitialize(            \
-      const int roiWidth, const Ipp8u* pMask, IppiSize maskSize,        \
+      const int roiWidth, const Ipp8u* pMask, const IppiSize& maskSize, \
       IppiMorphState* pMorphSpec, Ipp8u* pBuffer) const {               \
     return ippiMorphologyBorderInit_##SNAME##_C1R(                      \
         roiWidth, pMask, maskSize, pMorphSpec, pBuffer);                \
