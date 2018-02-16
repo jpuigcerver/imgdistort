@@ -35,12 +35,14 @@ inline T blinterp(const T* src, const int p, const int h, const int w,
   const int x2 = x1 + 1;
   const int y2 = y1 + 1;
 
-  double v = 0.0;
-  v += pixv(src, p, h, w, y1, x1, padv) * ((x2 - x) * (y2 - y));
-  v += pixv(src, p, h, w, y1, x2, padv) * ((x - x1) * (y2 - y));
-  v += pixv(src, p, h, w, y2, x1, padv) * ((x2 - x) * (y - y1));
-  v += pixv(src, p, h, w, y2, x2, padv) * ((x - x1) * (y - y1));
-  return saturate_cast<T>(v);
+  const double a = x - floor(x);
+  const double b = y - floor(y);
+
+  return saturate_cast<T>(
+      (pixv(src, p, h, w, y1, x1, padv) * (1.0 - a) +
+       pixv(src, p, h, w, y1, x2, padv) * (      a)) * (1.0 - b) +
+      (pixv(src, p, h, w, y2, x1, padv) * (1.0 - a) +
+       pixv(src, p, h, w, y2, x2, padv) * (      a)) * (      b));
 }
 
 }  // namespace imgdistort

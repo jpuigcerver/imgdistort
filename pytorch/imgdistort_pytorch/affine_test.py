@@ -4,55 +4,39 @@ import numpy as np
 import torch
 import unittest
 
-from imgdistort_pytorch import is_cuda_available, affine
-from scipy.ndimage.interpolation import affine_transform
+try:
+    import cv2 as cv
+except:
+    cv = None
 
-def _same_device_as(x, y):
-    if y.is_cuda:
-        return x.cuda(device=y.get_device())
-    else:
-        return x.cpu()
+from imgdistort_pytorch.ffi import is_cuda_available
+from imgdistort_pytorch import affine, types, utils
 
 class AffineTest(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def random_tensor(self, cuda, ttype, size=(2, 3, 4, 5)):
-        x = torch.FloatTensor(*size)
-        if ttype == torch.ByteTensor:
-            x.uniform_(0, 255)
-        else:
-            x.uniform_(-100, 100)
-        x = x.type(ttype)
-        if cuda:
-            x.cuda()
-
-        return x
-
     def run_identity(self, cuda, ttype):
-        x = self.random_tensor(cuda, ttype)
+        x = utils.random_tensor(ttype, cuda)
         m = torch.DoubleTensor([[1, 0, 0],
                                 [0, 1, 0]])
-        m = _same_device_as(m, x)
+        m = utils.same_device_as(m, x)
         y = affine(x, m)
         np.testing.assert_array_almost_equal(y, x)
 
     def run_identity_two_matrix(self, cuda, ttype):
-        x = self.random_tensor(cuda, ttype)
+        x = utils.random_tensor(ttype, cuda)
         m = torch.DoubleTensor([[[1, 0, 0],
                                  [0, 1, 0]],
                                 [[1, 0, 0],
                                  [0, 1, 0]]])
-        m = _same_device_as(m, x)
+        m = utils.same_device_as(m, x)
         y = affine(x, m)
         np.testing.assert_array_almost_equal(y, x)
 
     def run_multiple_images(self, cuda, ttype):
-        x = self.random_tensor(cuda, ttype, size=(5, 1, 7, 9))
+        x = utils.random_tensor(ttype, cuda, size=(5, 1, 7, 9))
         m = torch.DoubleTensor([[ 0.9, 0.1, -0.2],
                                 [-0.1, 0.8,  0.3]])
         # Run affine transform on the five images simultaneously.
-        m = _same_device_as(m, x)
+        m = utils.same_device_as(m, x)
         y = affine(x, m)
         # Run affine transform on the isolated images.
         y2 = torch.cat([affine(x[0, 0].view(1, 1, 7, 9), m),
@@ -64,11 +48,11 @@ class AffineTest(unittest.TestCase):
         np.testing.assert_array_almost_equal(y, y2)
 
     def run_multiple_channels(self, cuda, ttype):
-        x = self.random_tensor(cuda, ttype, size=(1, 3, 7, 9))
+        x = utils.random_tensor(ttype, cuda, size=(1, 3, 7, 9))
         m = torch.DoubleTensor([[ 0.9, 0.1, -0.2],
                                 [-0.1, 0.8,  0.3]])
         # Run affine transform on the three channels simultaneously.
-        m = _same_device_as(m, x)
+        m = utils.same_device_as(m, x)
         y = affine(x, m)
         # Run affine transform on the isolated channels.
         y2 = torch.cat([affine(x[0, 0].view(1, 1, 7, 9), m),
@@ -77,66 +61,48 @@ class AffineTest(unittest.TestCase):
         # The output should be the same.
         np.testing.assert_array_almost_equal(y, y2)
 
-    def run_scipy(self, cuda, ttype):
-        x = self.random_tensor(cuda, ttype, size=(1, 1, 9, 13))
-        m = torch.DoubleTensor([[0.8, 0.0, 0.0],
-                                [0.0, 0.8, 0.0]])
-        m = _same_device_as(m, x)
+    def run_opencv(self, cuda, ttype):
+        # My implementation should be very similar to OpenCV's.
+        x = utils.random_tensor(ttype, cuda, size=(1, 1, 9, 11))
+        m = torch.DoubleTensor([[1.2, -0.2, 0.1],
+                                [0.3, 0.8, -0.2]])
+        m = utils.same_device_as(m, x)
         y = affine(x, m)
 
-        x_np = x.numpy()
-        y_np = y.numpy()
-        m_np = m.numpy()
+        x_np = x[0, 0].cpu().numpy()
+        m_np = m.cpu().numpy()
+        y_np = y[0, 0].cpu().numpy()
 
-        #y2 = np.zeros(shape=(9, 13), dtype=np.float32)
-        #y2 = affine_transform(x_np[0, 0], m_np, order=0, mode='constant', cval=0)
-        #print(y2.shape)
-        #np.testing.assert_array_almost_equal(y[0, 0], y2)
+        y_cv = cv.warpAffine(x_np, m_np, (11, 9), flags=cv.INTER_LINEAR)
+        # The difference in the pixels should be < 4.
+        np.testing.assert_allclose(y_np, y_cv, atol=4)
 
-def register_tests(ttype, tname):
-    setattr(AffineTest,
-            'test_cpu_identity_%s' % tname,
-            lambda self: self.run_identity(False, ttype))
-    setattr(AffineTest,
-            'test_cpu_identity_two_matrix_%s' % tname,
-            lambda self: self.run_identity_two_matrix(False, ttype))
-    setattr(AffineTest,
-            'test_cpu_multiple_channels_%s' % tname,
-            lambda self: self.run_multiple_channels(False, ttype))
-    setattr(AffineTest,
-            'test_cpu_multiple_images_%s' % tname,
-            lambda self: self.run_multiple_images(False, ttype))
-    setattr(AffineTest,
-            'test_cpu_scipy_%s' % tname,
-            lambda self: self.run_scipy(False, ttype))
-
-    if is_cuda_available():
-        setattr(AffineTest,
-                'test_gpu_identity_%s' % tname,
-                lambda self: self.run_identity_two_matrix(True, ttype))
-        setattr(AffineTest,
-                'test_gpu_identity_two_matrix_%s' % tname,
-                lambda self: self.run_identity_two_matrix(True, ttype))
-        setattr(AffineTest,
-                'test_gpu_multiple_channels_%s' % tname,
-                lambda self: self.run_multiple_channels(True, ttype))
-        setattr(AffineTest,
-                'test_gpu_multiple_images_%s' % tname,
-                lambda self: self.run_multiple_images(True, ttype))
 
 # Note: torch.CharTensor is missing because PyTorch does not support the
 # conversion of a CharTensor to a numpy array.
-TENSOR_TYPES = [
-    torch.FloatTensor,
-    torch.DoubleTensor,
-    torch.ByteTensor,
-    torch.ShortTensor,
-    torch.IntTensor,
-    torch.LongTensor]
-TYPE_NAMES = ['f32', 'f64', 'u8', 's16', 's32', 's64']
+TENSOR_TYPE = [x for x in types.TENSOR_ALL_TYPE if x != torch.CharTensor]
+TENSOR_DESC = [x for x in types.TENSOR_ALL_DESC if x != 's8']
 
-for ttype, tname in zip(TENSOR_TYPES, TYPE_NAMES):
-    register_tests(ttype, tname)
+for test_name, run_method in zip(
+        ['test_{device}_identity_{tdesc}',
+         'test_{device}_identity_two_matrix_{tdesc}',
+         'test_{device}_multiple_channels_{tdesc}',
+         'test_{device}_multiple_images_{tdesc}'],
+        ['run_identity',
+         'run_identity_two_matrix',
+         'run_multiple_channels',
+         'run_multiple_images']):
+    for ttype, tdesc in zip(TENSOR_TYPE, TENSOR_DESC):
+        utils.register_torch_test(AffineTest, test_name, run_method, ttype, tdesc, add_cuda=True)
+
+
+if cv is not None:
+    # Only floating types are supported by OpenCV
+    for ttype, tdesc in zip(types.TENSOR_REAL_TYPE,
+                            types.TENSOR_REAL_DESC):
+        utils.register_torch_test(AffineTest,
+                                  'test_{device}_opencv_{tdesc}', 'run_opencv',
+                                  ttype, tdesc)
 
 if __name__ == '__main__':
     unittest.main()

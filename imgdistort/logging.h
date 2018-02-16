@@ -94,12 +94,12 @@ T* check_not_null(const char* file, const int line, const char* msg, T* ptr) {
     CHECK_FMT(__FILE__, __LINE__, msg_, status_);                       \
   } while(0)
 
-#define CHECK_CUDA_CALL(status)                                         \
-  do {                                                                  \
-    const cudaError_t status_ = (status);                               \
-    const std::string msg_ =                                            \
-        "CUDA call: " + std::string(cudaGetErrorString(status_));       \
-    CHECK_FMT(__FILE__, __LINE__, msg_.c_str(), status_);               \
+#define CHECK_CUDA_CALL(status)                                          \
+  do {                                                                   \
+    const cudaError_t status_ = (status);                                \
+    const std::string msg_ =                                             \
+        "CUDA call: " + std::string(cudaGetErrorString(status_));        \
+    CHECK_FMT(__FILE__, __LINE__, msg_.c_str(), status_ == cudaSuccess); \
   } while(0)
 
 #define CHECK_LAST_CUDA_CALL() CHECK_CUDA_CALL(cudaPeekAtLastError())

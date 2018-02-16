@@ -8,7 +8,7 @@ __git_branch__ = '${GIT_BRANCH}'
 __git_commit__ = '${GIT_SHA1}'
 __git_status__ = '${GIT_CLEAN}'
 
-from imgdistort_pytorch.imgdistort import is_cuda_available
+from imgdistort_pytorch.ffi import is_cuda_available
 from imgdistort_pytorch.imgdistort import affine, dilate, erode
 
 __all__ = ['is_cuda_available', 'affine', 'dilate', 'erode']

@@ -56,8 +56,11 @@ IF(WITH_PYTORCH)
 
   # Copy files to binary dir
   SET(_COPY_FILES)
-  LIST(APPEND _COPY_FILES imgdistort_pytorch/imgdistort.py)
   LIST(APPEND _COPY_FILES imgdistort_pytorch/affine_test.py)
+  LIST(APPEND _COPY_FILES imgdistort_pytorch/ffi.py)
+  LIST(APPEND _COPY_FILES imgdistort_pytorch/imgdistort.py)
+  LIST(APPEND _COPY_FILES imgdistort_pytorch/types.py)
+  LIST(APPEND _COPY_FILES imgdistort_pytorch/utils.py)
   FOREACH(_file IN LISTS _COPY_FILES)
     CONFIGURE_FILE(
       "${CMAKE_CURRENT_SOURCE_DIR}/${_file}"
@@ -88,8 +91,11 @@ IF(WITH_PYTORCH)
     COMMAND ${CMAKE_COMMAND} -E touch "${OUTPUT}"
     DEPENDS "${INIT_PY}"
     DEPENDS "${SETUP_PY}"
-    DEPENDS imgdistort_pytorch/imgdistort.py
     DEPENDS imgdistort_pytorch/affine_test.py
+    DEPENDS imgdistort_pytorch/ffi.py
+    DEPENDS imgdistort_pytorch/imgdistort.py
+    DEPENDS imgdistort_pytorch/types.py
+    DEPENDS imgdistort_pytorch/utils.py
     DEPENDS pytorch_
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
   # Custom target to run setup.py build during make

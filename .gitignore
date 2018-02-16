@@ -40,4 +40,7 @@ luac.out
 *.hex
 
 *~
-build
+*.pyc
+build*
+cmake-build*
+.idea
