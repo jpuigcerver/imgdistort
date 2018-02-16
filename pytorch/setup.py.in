@@ -1,23 +1,50 @@
 import re
 
-from distutils.core import setup
+from setuptools import setup
 from torch.utils.ffi import create_extension
 
-WITH_CUDA = True if ('${WITH_CUDA}').upper() == 'ON' else False
+# Configure package name
+# CPU-only: imgdistort_pytorch
+# CUDA 7.5: imgdistort_pytorch_cu75
+# CUDA 8.0: imgdistort_pytorch_cu80
+# CUDA 9.0: imgdistort_pytorch_cu90
+PACKAGE_NAME = '${IMGDISTORT_PYTORCH_PACKAGE}'
+URL = 'https://github.com/jpuigcerver/imgdistort'
+AUTHOR = 'Joan Puigcerver'
+AUTHOR_EMAIL = 'joapuipe@gmail.com'
+DESCRIPTION = 'PyTorch bindings of the imgdistort library'
+CLASSIFIERS = [
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Topic :: Scientific/Engineering :: Image Recognition',
+    'Topic :: Software Development',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
 
-headers = ['${PROJECT_SOURCE_DIR}/pytorch/src/binding_cpu.h']
-if WITH_CUDA:
-    headers += ['${PROJECT_SOURCE_DIR}/pytorch/src/binding_gpu.h']
+WITH_CUDA = ${_PY_WITH_CUDA}
 
-include_dirs=['${PROJECT_SOURCE_DIR}'] + '${_EXTERNAL_DIRS}'.split(';')
+HEADERS = '${_PY_HEADERS}'.split(';')
 
-library_dirs=['${PROJECT_BINARY_DIR}/src']
+EXTERNAL_LIBS = '${_PY_EXTERNAL_LIBS}'.split(';')
 
-external_libs='${_EXTERNAL_LIBS}'.split(';')
+INCLUDE_DIRS = ['${PROJECT_SOURCE_DIR}'] + '${_PY_EXTERNAL_DIRS}'.split(';')
+
+LIBRARY_DIRS = ['${PROJECT_BINARY_DIR}/src']
 
 extra_objects=[]
-libraries=[]
-for lib in external_libs:
+libraries=['stdc++']
+for lib in EXTERNAL_LIBS:
     if lib[:2] == '-l':
         libraries.append(lib[2:])
     elif re.match(r'^.*\.[^./\\]+$', lib) is not None:
@@ -28,21 +55,29 @@ for lib in external_libs:
 ffi = create_extension(
     name='imgdistort',
     language='c',
-    headers=headers,
+    headers=HEADERS,
     sources=[],
     with_cuda=WITH_CUDA,
-    include_dirs=include_dirs,
-    library_dirs=library_dirs,
+    include_dirs=INCLUDE_DIRS,
+    library_dirs=LIBRARY_DIRS,
     libraries=libraries,
     extra_objects=extra_objects,
     verbose=True)
 
 ffi = ffi.distutils_extension()
 ffi.name = 'imgdistort_pytorch._imgdistort'
-setup(
-    name='imgdistort_pytorch',
-    version='0.0',
-    license='MIT',
-    packages=['imgdistort_pytorch'],
-    ext_modules=[ffi],
-    package_dir={'': '${CMAKE_CURRENT_SOURCE_DIR}'})
+
+if __name__ == '__main__':
+    setup(
+        author=AUTHOR,
+        author_email=AUTHOR_EMAIL,
+        classifiers=CLASSIFIERS,
+        description=DESCRIPTION,
+        ext_modules=[ffi],
+        include_package_data=True,
+        install_requires=['torch', 'cffi'],
+        license='MIT',
+        name=PACKAGE_NAME,
+        packages=['imgdistort_pytorch'],
+        url=URL,
+        version='${IMGDISTORT_VERSION}')

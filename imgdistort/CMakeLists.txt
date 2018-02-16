@@ -1,0 +1,5 @@
+CONFIGURE_FILE(config.h.in config.h)
+
+ADD_SUBDIRECTORY(cpu)
+ADD_SUBDIRECTORY(gpu)
+ADD_SUBDIRECTORY(testing)

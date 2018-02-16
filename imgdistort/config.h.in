@@ -1,0 +1,24 @@
+#ifndef IMGDISTORT_CONFIG_H_
+#define IMGDISTORT_CONFIG_H_
+
+#cmakedefine WITH_CUDA
+
+#cmakedefine WITH_GLOG
+
+#cmakedefine WITH_IPP
+
+#ifdef __cplusplus
+#define EXTERN_C extern "C"
+#else
+#define EXTERN_C
+#endif
+
+#ifndef __host__
+#define __host__
+#endif
+
+#ifndef __device__
+#define __device__
+#endif
+
+#endif  // IMGDISTORT_CONFIG_H_
