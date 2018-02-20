@@ -38,7 +38,7 @@ void kernel_morphology_nchw(
     const Int N, const Int C, const Int H, const Int W,
     const Int Mn, const Int* Ms, const Int* M_offset, const uint8_t* M,
     const T* src, const Int sp, T* dst, const Int dp) {
-   const Int Bx = MORPH_BLOCK_SIZE * (blockIdx.x % DIV_UP(W, MORPH_BLOCK_SIZE));
+  const Int Bx = MORPH_BLOCK_SIZE * (blockIdx.x % DIV_UP(W, MORPH_BLOCK_SIZE));
   const Int By = MORPH_BLOCK_SIZE * blockIdx.y;
 
   __shared__ Int _T[3];
@@ -79,10 +79,9 @@ void kernel_morphology_nchw(
     const Int Aw = blockDim.x + Mw - 1, Ah = blockDim.y + Mh - 1;
     for (Int ay = thBy; ay < Ah; ay += blockDim.y) {
       for (Int ax = thBx; ax < Aw; ax += blockDim.x) {
-        const Int sx = Bx + ax - Mw / 2, sy = By + ay - Mh / 2;
-        if (sx >= 0 && sx < W && sy >= 0 && sy < H) {
-          _S[ay * Aw + ax] = pixv(src_nc, sp, sy, sx);
-        }
+        const Int sy = min(max(By + ay - Mh / 2, (Int)0), H - 1);
+        const Int sx = min(max(Bx + ax - Mw / 2, (Int)0), W - 1);
+        _S[ay * Aw + ax] = pixv(src_nc, sp, sy, sx);
       }
     }
     __syncthreads();
@@ -91,13 +90,16 @@ void kernel_morphology_nchw(
     const Int x = Bx + thBx;
     const Int y = By + thBy;
     if (x < W && y < H) {
-      T tmp = pixv(_S, Aw, thBy + Mh / 2, thBx + Mw / 2);
+      bool init = false;
+      T tmp = 0; // pixv(_S, Aw, thBy + Mh / 2, thBx + Mw / 2);
       for (Int ki = 0; ki < Mh; ++ki) {
         for (Int kj = 0; kj < Mw; ++kj) {
           const Int ay = thBy + ki, ax = thBx + kj;
-          const Int sy = By + ay - Mh / 2, sx = Bx + ax - Mw / 2;
-          if (sx >= 0 && sx < W && sy >= 0 && sy < H && _M[ki * Mw + kj]) {
-            tmp = Functor::f(tmp, pixv(_S, Aw, ay, ax));
+          const Int sy = min(max(By + ay - Mh / 2, (Int)0), H - 1);
+          const Int sx = min(max(Bx + ax - Mw / 2, (Int)0), W - 1);
+          if (_M[ki * Mw + kj] != 0) {
+            if (!init) { tmp = pixv(_S, Aw, ay, ax); init = true; }
+            else { tmp = Functor::f(tmp, pixv(_S, Aw, ay, ax)); }
           }
         }
       }

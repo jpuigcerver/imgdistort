@@ -17,7 +17,7 @@ def random_tensor(ttype, cuda=False, size=(2, 3, 4, 5)):
     return x.cuda() if cuda else x
 
 def register_torch_test(cls, pattern_name, run_method, ttype, tdesc,
-                        add_cuda=True):
+                        add_cuda=True, *args):
     r"""Register a test implementation to a given test class.
 
     Args:
@@ -32,10 +32,10 @@ def register_torch_test(cls, pattern_name, run_method, ttype, tdesc,
         default: `True'.
     """
     setattr(cls, pattern_name.format(device='cpu', tdesc=tdesc),
-            lambda self: getattr(cls, run_method)(self, False, ttype))
+            lambda self: getattr(cls, run_method)(self, False, ttype, *args))
     if add_cuda and is_cuda_available():
         setattr(cls, pattern_name.format(device='gpu', tdesc=tdesc),
-                lambda self: getattr(cls, run_method)(self, True, ttype))
+                lambda self: getattr(cls, run_method)(self, True, ttype, *args))
 
 def same_device_as(x, y):
     r"""Copy x to the same device as y, if necessary."""

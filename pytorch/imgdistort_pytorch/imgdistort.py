@@ -70,7 +70,8 @@ class _MorphologyFunction(_FunctionBase):
             elif structuring_element.dim() == 3:
                 # All structuring elements have the same size
                 structuring_element_size = torch.LongTensor(
-                    torch.size()[0] * torch.size()[1:])
+                    structuring_element.size()[0] *
+                    [ structuring_element.size()[1:] ])
             else:
                 raise ValueError(
                     'The structuring element should be a matrix (2d tensor), '
@@ -96,8 +97,8 @@ class _MorphologyFunction(_FunctionBase):
                 'a 3d tensor, or a list of 2d tensors')
 
         x = x.contiguous()
-        structuring_element_sizes = utils.same_device_as(
-            structuring_element_sizes, x)
+        structuring_element_size = utils.same_device_as(
+            structuring_element_size, x)
         structuring_element = utils.same_device_as(
             structuring_element.contiguous(), x)
         y = utils.same_device_as(y.contiguous(), x)
@@ -105,7 +106,7 @@ class _MorphologyFunction(_FunctionBase):
         # Call function in the appropriate device
         with torch.cuda.device_of(x):
             super(_MorphologyFunction, cls).Apply(
-                structuring_element_sizes, structuring_element, x, y,
+                structuring_element_size, structuring_element, x, y,
                 tensor_type=x.type())
         return y
 
@@ -130,7 +131,7 @@ def affine(batch_input, affine_matrix, border_value=0, batch_output=None):
     return _AffineFunction.Apply(batch_input, affine_matrix, border_value,
                                  batch_output)
 
-def dilate(batch_input, structuring_element, batch_output):
+def dilate(batch_input, structuring_element, batch_output=None):
     r"""Apply a morphology dilation to a batch of images, given by a
     structuring element matrix.
 
@@ -147,7 +148,7 @@ def dilate(batch_input, structuring_element, batch_output):
     return _DilateFunction.Apply(batch_input, structuring_element,
                                  batch_output)
 
-def erode(batch_input, structuring_element, batch_output):
+def erode(batch_input, structuring_element, batch_output=None):
     r"""Apply a morphology erosion to a batch of images, given by a
     structuring element matrix.
 

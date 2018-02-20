@@ -59,6 +59,7 @@ IF(WITH_PYTORCH)
   LIST(APPEND _COPY_FILES imgdistort_pytorch/affine_test.py)
   LIST(APPEND _COPY_FILES imgdistort_pytorch/ffi.py)
   LIST(APPEND _COPY_FILES imgdistort_pytorch/imgdistort.py)
+  LIST(APPEND _COPY_FILES imgdistort_pytorch/morphology_test.py)
   LIST(APPEND _COPY_FILES imgdistort_pytorch/types.py)
   LIST(APPEND _COPY_FILES imgdistort_pytorch/utils.py)
   FOREACH(_file IN LISTS _COPY_FILES)
@@ -94,6 +95,7 @@ IF(WITH_PYTORCH)
     DEPENDS imgdistort_pytorch/affine_test.py
     DEPENDS imgdistort_pytorch/ffi.py
     DEPENDS imgdistort_pytorch/imgdistort.py
+    DEPENDS imgdistort_pytorch/morphology_test.py
     DEPENDS imgdistort_pytorch/types.py
     DEPENDS imgdistort_pytorch/utils.py
     DEPENDS pytorch_
@@ -112,6 +114,15 @@ IF(WITH_PYTORCH)
     imgdistort_pytorch.affine_test)
   SET_TESTS_PROPERTIES(
     pytorch_affine_test
+    PROPERTIES
+    ENVIRONMENT PYTHONPATH=${_PYTHONPATH}
+    DEPENDS imgdistort_pytorch
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+  ADD_TEST(NAME pytorch_morphology_test
+    COMMAND ${PYTHON_EXECUTABLE} -m unittest
+    imgdistort_pytorch.morphology_test)
+  SET_TESTS_PROPERTIES(
+    pytorch_morphology_test
     PROPERTIES
     ENVIRONMENT PYTHONPATH=${_PYTHONPATH}
     DEPENDS imgdistort_pytorch

@@ -33,17 +33,17 @@ class AffineTest(unittest.TestCase):
 
     def run_multiple_images(self, cuda, ttype):
         x = utils.random_tensor(ttype, cuda, size=(5, 1, 7, 9))
-        m = torch.DoubleTensor([[ 0.9, 0.1, -0.2],
-                                [-0.1, 0.8,  0.3]])
+        m = torch.from_numpy(np.random.randn(5, 2, 3) * 0.1)
+        m = m + torch.eye(2, 3).type('torch.DoubleTensor').view(1, 2, 3)
         # Run affine transform on the five images simultaneously.
         m = utils.same_device_as(m, x)
         y = affine(x, m)
         # Run affine transform on the isolated images.
-        y2 = torch.cat([affine(x[0, 0].view(1, 1, 7, 9), m),
-                        affine(x[1, 0].view(1, 1, 7, 9), m),
-                        affine(x[2, 0].view(1, 1, 7, 9), m),
-                        affine(x[3, 0].view(1, 1, 7, 9), m),
-                        affine(x[4, 0].view(1, 1, 7, 9), m)], dim=0)
+        y2 = torch.cat([affine(x[0, 0].view(1, 1, 7, 9), m[0]),
+                        affine(x[1, 0].view(1, 1, 7, 9), m[1]),
+                        affine(x[2, 0].view(1, 1, 7, 9), m[2]),
+                        affine(x[3, 0].view(1, 1, 7, 9), m[3]),
+                        affine(x[4, 0].view(1, 1, 7, 9), m[4])], dim=0)
         # The output should be the same.
         np.testing.assert_array_almost_equal(y, y2)
 

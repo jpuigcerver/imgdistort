@@ -46,18 +46,21 @@ void morphology_nchw_generic(
         for (Int x = 0; x < W; ++x) {
           const Int Mh = Ms[2 * (n % Mn) + 0];
           const Int Mw = Ms[2 * (n % Mn) + 1];
-          T tmp = pixv(src + (n * C + c) * H * sp, sp, y, x);
+          const T *src_nc = src + (n * C + c) * H * sp;
+          T* dst_nc = dst + (n * C + c) * H * dp;
+          bool init = false; T tmp = 0;
           for (Int ki = 0; ki < Mh; ++ki) {
             for (Int kj = 0; kj < Mw; ++kj) {
-              const Int sy = y + ki - Mh / 2, sx = x + kj - Mw / 2;
-              if (sy >= 0 && sx >= 0 && sy < H && sx < W &&
-                  M[M_offset[n % Mn] + ki * Mw + kj] != 0) {
-                tmp = Functor::f(tmp, pixv(src + (n * C + c) * H * sp, sp,
-                                           y + ki - Mh / 2, x + kj - Mw / 2));
+              const Int sy = std::min(std::max<Int>(y + ki - Mh / 2, 0), H - 1);
+              const Int sx = std::min(std::max<Int>(x + kj - Mw / 2, 0), W - 1);
+              if (M[M_offset[n % Mn] + ki * Mw + kj] != 0) {
+                const T v = pixv(src_nc, sp, sy, sx);
+                if (!init) { tmp = v; init = true; }
+                else { tmp = Functor::f(tmp, v); }
               }
             }
           }
-          pixv(dst + (n * C + c) * H * dp, dp, y, x) = tmp;
+          pixv(dst_nc, dp, y, x) = tmp;
         }
       }
     }
