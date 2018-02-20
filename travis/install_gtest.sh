@@ -5,7 +5,7 @@ if [ -n "$GTEST_ROOT" ]; then
   git clone https://github.com/google/googletest
   cd googletest
   mkdir -p build && cd build
-  cmake -DBUILD_GTEST=OFF -DBUILD_GMOCK=ON -DCMAKE_INSTALL_PREFIX=$GTEST_ROOT ..
+  cmake -DBUILD_GTEST=ON -DBUILD_GMOCK=ON -DCMAKE_INSTALL_PREFIX=$GTEST_ROOT ..
   make -j4
   make install
 fi;
