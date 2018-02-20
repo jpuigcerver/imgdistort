@@ -41,6 +41,6 @@ luac.out
 
 *~
 *.pyc
-build*
+build*/
 cmake-build*
 .idea
