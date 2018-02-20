@@ -15,6 +15,8 @@ MY_ADD_LIBRARY(cpu_morphology
   COND WITH_IPP ${IPP_LIBRARIES})
 
 IF(WITH_TESTS AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))
+  INCLUDE_DIRECTORIES(${GMOCK_INCLUDE_DIR})
+  INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
   IF(BUILD_SHARED_LIBS)
     SET(affine_lib_ cpu_affine)
     SET(morphology_lib_ cpu_morphology)
@@ -33,7 +35,7 @@ IF(WITH_TESTS AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))
     ../testing/image.h)
   TARGET_LINK_LIBRARIES(cpu_affine_test
     ${affine_lib_}
-    ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
+    ${GLOG_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} ${GTEST_LIBRARIES})
   ADD_TEST(cpu_affine_test cpu_affine_test)
   ADD_IWYU_TO_TARGET(cpu_affine_test)
 
@@ -46,7 +48,7 @@ IF(WITH_TESTS AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))
     ../testing/morphology_base.h)
   TARGET_LINK_LIBRARIES(cpu_morphology_test
     ${morphology_lib_}
-    ${GLOG_LIBRARIES} ${GMOCK_MAIN_LIBRARIES} ${GTEST_LIBRARIES})
+    ${GLOG_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} ${GTEST_LIBRARIES})
   ADD_TEST(cpu_morphology_test cpu_morphology_test)
   ADD_IWYU_TO_TARGET(cpu_morphology_test)
 ENDIF(WITH_TESTS AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))

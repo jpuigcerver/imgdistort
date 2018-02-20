@@ -6,6 +6,7 @@
 #include <imgdistort/morphology_util.h>
 
 #include <cstdint>
+#include <vector>
 
 namespace imgdistort {
 namespace cpu {

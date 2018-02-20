@@ -5,6 +5,8 @@
 #include <imgdistort/affine_util.h>
 #include <imgdistort/interpolation.h>
 
+#include <vector>
+
 namespace imgdistort {
 namespace cpu {
 

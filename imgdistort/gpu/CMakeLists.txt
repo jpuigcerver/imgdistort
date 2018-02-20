@@ -9,6 +9,8 @@ MY_CUDA_ADD_LIBRARY(gpu_morphology
   morphology.h)
 
   IF(WITH_TESTS AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))
+    INCLUDE_DIRECTORIES(${GMOCK_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
     IF(BUILD_SHARED_LIBS)
       SET(affine_lib_ gpu_affine)
       SET(morphology_lib_ gpu_morphology)
@@ -29,7 +31,7 @@ MY_CUDA_ADD_LIBRARY(gpu_morphology
       ../testing/image.h)
     TARGET_LINK_LIBRARIES(gpu_affine_test
       ${affine_lib_}
-      ${GLOG_LIBRARIES} ${GMOCK_LIBRARIES} ${GTEST_LIBRARIES})
+      ${GLOG_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} ${GTEST_LIBRARIES})
     ADD_TEST(gpu_affine_test gpu_affine_test)
     ADD_IWYU_TO_TARGET(gpu_affine_test)
 
@@ -42,7 +44,7 @@ MY_CUDA_ADD_LIBRARY(gpu_morphology
       ../testing/morphology_base.h)
     TARGET_LINK_LIBRARIES(gpu_morphology_test
       ${morphology_lib_}
-      ${GLOG_LIBRARIES} ${GMOCK_MAIN_LIBRARIES} ${GTEST_LIBRARIES})
+      ${GLOG_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} ${GTEST_LIBRARIES})
     ADD_TEST(gpu_morphology_test gpu_morphology_test)
     ADD_IWYU_TO_TARGET(gpu_morphology_test)
   ENDIF(WITH_TESTS AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))

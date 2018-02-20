@@ -83,7 +83,3 @@ REGISTER_TYPED_TESTS(u64, uint64_t);
 REGISTER_TYPED_TESTS(f32, float);
 REGISTER_TYPED_TESTS(f64, double);
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
