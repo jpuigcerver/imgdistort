@@ -9,83 +9,83 @@ Library to perform image distortions on the GPU and CPU.
   + [Grayscale dilation](https://en.wikipedia.org/wiki/Dilation_(morphology))
   
 ## Requirements
-- A modern C++ compiler with C++11 support (e.g. GCC >= 4.9). 
-  You only need a C++11 compiler to build the library, once it is built you 
-  can link it as a C library. It is also recommended that the compiler offers 
-  OpenMP support, but it is not required. 
-- [CMake](https://cmake.org/) >= 3.0
-- [Google Glog](https://github.com/google/glog)
-- Recommended: [CUDA toolkit](https://developer.nvidia.com/cuda-downloads) >= 6.5.
-  Only necessary if you want to add GPU support. 
-- Recommended: [Intel® Integrated Performance Primitives](https://software.intel.com/en-us/intel-ipp)
-  It's recommended to use Intel's implementation of the affine and 
-  morphological distortions. If you don't have a license for it, a custom 
-  implementation will be used. 
-- Optional: [Google Test suite](https://github.com/google/googletest) 
-  (including both Google Test and Google Mock), only necessary if yo want to 
-  build the tests.
+
+### Minimum:
+- C++11 compiler (tested with GCC 4.8.2, 5.4.0, Clang 3.5.0).
+- [CMake 3.0](https://cmake.org/).
+
+### Recommended:
+- For better logging: [Google Glog](https://github.com/google/glog).
+- For GPU support: [CUDA Toolkit](https://developer.nvidia.com/cuda-zone).
+- For running tests: [Google Test](https://github.com/google/googletest).
+
+### PyTorch bindings:
+- [PyTorch](http://pytorch.org/) (tested with version 0.3.0).
   
-## Installation 
-You can build and install the library using CMake, just clone the repository, 
-create a build directory and build it:
+## Installation
+
+### PyTorch bindings with pip
+
+The easiest way of using imgdistort with PyTorch is using pip. I have 
+precompiled the tool for Linux using different version of Python
+and supporting different devices. The value in each cell corresponds to 
+the commit from which the wheel was built.
+
+|          | Python 2.7 | Python 3.5 | Python 3.6 |
+|----------|:----------:|:----------:|:----------:|
+| CPU-only | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
+| CUDA 7.5 | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
+| CUDA 8.0 | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
+| CUDA 9.0 | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
+
+For instance, to install the CPU-only version for Python 3.5:
+```bash
+pip3 install https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl
+```
+
+Notice that each version of the library was compiled to support only the most
+common and supported architectures in each CUDA release. 
+Choose the compiled version accordingly:
+
+|          | Supported architectures        | Compute Capability                |
+|----------|-------------------------------:|----------------------------------:|
+| CUDA 7.5 | Kepler, Maxwell                | 3.0, 3.5, 5.0, 5.2                |
+| CUDA 8.0 | Kepler, Maxwell, Pascal        | 3.0, 3.5, 5.0, 5.2, 6.0, 6.1      |
+| CUDA 9.0 | Kepler, Maxwell, Pascal, Volta | 3.0, 3.5, 5.0, 5.2, 6.0, 6.1, 7.0 |
+
+### From sources
+
+The installation process should be pretty straightforward assuming that you
+have installed correctly the required libraries and tools.
 
 ```bash
-git clone https://github.com/jpuigcerver/imgdistort
+git clone https://github.com/jpuigcerver/imgdistort.git
 cd imgdistort
 mkdir build
 cd build
-ccmake ..
+cmake ..
 make
 make install
 ```
 
-CMake should detect the libraries that you have installed and automatically 
-configure them. If you have some of the required/recommended libraries 
-installed in a non-standard location, you can make use of some CMake variables 
-to specify the location:
+By default, it will try to compile the PyTorch bindings with CUDA support and
+install them in the default location for Python libraries in your system.
 
-```bash
-cmake                                   \
-  -DIPP_ROOT_DIR=/path/to/ipp           \
-  -DGLOG_ROOT_DIR=/path/to/glog         \
-  -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda \
-  ..
-```
+If you have any problem installing the library, read through the CMake errors
+and warnings. In most cases, the problems are due to installing the tools in
+non-standard locations or using old versions of them.
 
-If CMake detects some library that you don't want to use, you can force to 
-ignore them:
-```bash
-cmake -DWITH_IPP=OFF -DWITH_CUDA=OFF ..
-```
+You can set many CMake variables to aid it to detect the required software.
+Some helpful variables are:
 
-To build the tests, CMake will need to find Google Test and Google Mock, 
-and you will need to enable the test build:
-```bash
-cmake -DGTEST_ROOT=/path/to/gtest -DGMOCK_ROOT=/path/to/gmock -DWITH_TESTS=ON ..
-```
-
-## Image format
-Pixel intensities can be represented by different data types:
-- unsigned 8-bit integer (uint8_t)
-- unsigned 16-bit integer (uint16_t)
-- unsigned 32-bit integer (uint32_t)
-- unsigned 64-bit integer (uint64_t)
-- signed 16-bit integer (int16_t)
-- signed 32-bit integer (int32_t)
-- signed 64-bit integer (int64_t)
-- single precision floating numbers (float)
-- double precision floating numbers (double)
-
-The library is designed to work with batched images, i.e. processing multiple
-images simultaneously. The layout for each batch of images is:
-Batch size x Channels x Height x Width (which is the standard layout used 
-in [Torch](http://torch.ch/)).
-
-It is important to keep in mind that the output images have the same size as 
-the original images, regardless of the applied operation. That means that you 
-may "lose" part of your input image when certain transformations are applied 
-(i.e. affine transformations). To avoid that, pad your images conveniently
-before using imgdistort.
-
-Additionally, all batched images must have the same size, so if your images 
-have different sizes you will also need to pad them.
+- `CUDA_TOOLKIT_ROOT_DIR`: Specify the directory where you installed the
+  NVIDIA CUDA Toolkit.
+- `CUDA_ARCH_LIST`: Specify the list of CUDA architectures that should be
+  supported during the compilation. By default it will use "Auto", which will
+  compile _only_ for the architectures supported by your graphic cards.
+- `Python_ADDITIONAL_VERSIONS`: When you have multiple versions of Python
+  installed in your system, you can choose to use a specific one (e.g. 3.5)
+  with this variable.
+- `PYTORCH_SETUP_PREFIX`: Prefix location to install the PyTorch bindings
+  (e.g. /home/jpuigcerver/.local).
+  
