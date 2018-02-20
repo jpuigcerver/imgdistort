@@ -1,0 +1,9 @@
+FROM imgdistort:cpu-base
+
+# Install PyTorch for CPU-only in different Python versions.
+COPY docker_pytorch_cpu.sh /
+RUN /docker_pytorch_cpu.sh && \
+    rm /docker_pytorch_cpu.sh
+
+# Copy script to create wheels for CPU-only distributions.
+COPY create_wheels_cpu.sh /

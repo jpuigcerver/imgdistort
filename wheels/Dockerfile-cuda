@@ -1,0 +1,12 @@
+ARG CUDA_VERSION_SHORT
+FROM imgdistort:cu${CUDA_VERSION_SHORT}-base
+ARG CUDA_VERSION_SHORT
+ENV CUDA_VERSION_SHORT=${CUDA_VERSION_SHORT}
+
+# Install PyTorch for CUDA in different Python versions.
+COPY docker_pytorch_cuda.sh /
+RUN /docker_pytorch_cuda.sh && \
+    rm /docker_pytorch_cuda.sh
+
+# Copy script to create wheels for CPU-only distributions.
+COPY create_wheels_cuda.sh /
