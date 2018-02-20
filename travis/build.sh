@@ -4,7 +4,7 @@ set -e;
 mkdir build;
 cd build;
 cmake -DWITH_CUDA=OFF -DWITH_GLOG=OFF -DWITH_IPP=OFF -DWITH_PYTORCH=ON \
-      -DCMAKE_BUILD_TYPE=DEBUG ..;
+      -DWITH_TESTS=ON -DCMAKE_BUILD_TYPE=DEBUG ..;
 make VERBOSE=1;
 
 cd pytorch;
