@@ -4,8 +4,6 @@ import numpy as np
 import torch
 import unittest
 
-import pylab as plt
-
 try:
     import cv2 as cv
 except:
