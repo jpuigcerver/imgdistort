@@ -1,0 +1,34 @@
+language: python
+
+os:
+  - linux
+
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+
+env:
+  global:
+    - GTEST_ROOT="$HOME/.local"
+  matrix:
+    - CC=gcc CXX=g++
+
+before_install:
+  - travis/install_packages.sh
+  - travis/install_pytorch.sh
+  - travis/install_gtest.sh
+
+script:
+  - travis/build.sh
+  - travis/test.sh
+
+after_failure:
+  - cat build/Testing/Temporary/LastTest.log
+  - find build/pytorch/inst -name "*.so" | xargs -n1 nm -C | awk '$1 == "U"'
+  - find build/pytorch/inst -name "*.so" | xargs -n1 ldd
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
