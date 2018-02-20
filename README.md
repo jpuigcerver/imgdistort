@@ -1,12 +1,13 @@
 # imgdistort
-Library to perform image distortions on the GPU and CPU.
+
+[![Build Status](https://travis-ci.org/jpuigcerver/imgdistort.svg?branch=npp)](https://travis-ci.org/jpuigcerver/imgdistort)
+
+A library to perform image distortions on the CPU and GPU (CUDA).
 
 ## Available distortions
 - [Affine transformations](https://en.wikipedia.org/wiki/Affine_transformation)
-  + Scaling, translation, rotation, shearing, etc.
-- Morphological operations
-  + [Grayscale erosion](https://en.wikipedia.org/wiki/Erosion_(morphology))
-  + [Grayscale dilation](https://en.wikipedia.org/wiki/Dilation_(morphology))
+- [Grayscale dilation](https://en.wikipedia.org/wiki/Dilation_(morphology))
+- [Grayscale erosion](https://en.wikipedia.org/wiki/Erosion_(morphology))
   
 ## Requirements
 
