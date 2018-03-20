@@ -20,8 +20,10 @@ class AffineCaller : public ::imgdistort::pytorch::AffineCaller<T> {
  public:
   void operator()(
       const int N, const int C, const int H, const int W,
-      const double* M, const int Mn, const T* src, T* dst) const override {
-    ::imgdistort::cpu::affine_nchw<T>(N, C, H, W, M, Mn, src, W, dst, W);
+      const double* M, const int Mn, const T* src, T* dst,
+      const T& border_value) const override {
+    ::imgdistort::cpu::affine_nchw<T>(N, C, H, W, M, Mn, src, W, dst, W,
+                                      border_value);
   };
 };
 

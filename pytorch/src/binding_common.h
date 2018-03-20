@@ -11,7 +11,8 @@ class AffineCaller {
  public:
   virtual void operator()(
       const int N, const int C, const int H, const int W,
-      const double* M, const int Mn, const T* src, T* dst) const = 0;
+      const double* M, const int Mn, const T* src, T* dst,
+      const T& border_value) const = 0;
 };
 
 template <typename T>
@@ -25,6 +26,7 @@ class MorphologyCaller {
 
 template <typename DTYPE, typename MTYPE, typename TTYPE>
 inline void imgdistort_affine_nchw(const MTYPE* m, const TTYPE* x, TTYPE* y,
+                                   const DTYPE border_value,
                                    const AffineCaller<DTYPE>& caller) {
   assert(m->nDimension == 2 || m->nDimension == 3);
   assert(x->nDimension == 4);
@@ -42,7 +44,7 @@ inline void imgdistort_affine_nchw(const MTYPE* m, const TTYPE* x, TTYPE* y,
   const double* m_ptr = m->storage->data + m->storageOffset;
   const DTYPE* x_ptr = x->storage->data + x->storageOffset;
   DTYPE* y_ptr = y->storage->data + y->storageOffset;
-  caller(N, C, H, W, m_ptr, Mn, x_ptr, y_ptr);
+  caller(N, C, H, W, m_ptr, Mn, x_ptr, y_ptr, border_value);
 }
 
 template <typename DTYPE, typename MTYPE, typename TTYPE>
@@ -80,9 +82,9 @@ inline void imgdistort_morph_nchw(
 
 #define DEFINE_AFFINE_WRAPPER(DEVICE, TSNAME, DTYPE, MTYPE, TTYPE)      \
   void imgdistort_affine_nchw_##DEVICE##_##TSNAME(                      \
-      const MTYPE* m, const TTYPE* x, TTYPE* y) {                       \
+      const MTYPE* m, const TTYPE* x, TTYPE* y, const DTYPE border) {   \
     ::imgdistort::pytorch::imgdistort_affine_nchw<DTYPE, MTYPE, TTYPE>( \
-         m, x, y,                                                       \
+         m, x, y, border,                                               \
          ::imgdistort::pytorch::DEVICE::AffineCaller<DTYPE>());         \
   }
 

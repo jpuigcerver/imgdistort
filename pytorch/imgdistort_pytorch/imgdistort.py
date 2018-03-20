@@ -5,8 +5,9 @@ import torch
 from imgdistort_pytorch import ffi
 from imgdistort_pytorch import utils
 
+
 class _FunctionBase(object):
-    _fn_dict = None
+    fn_dict = None
 
     @classmethod
     def Apply(cls, *args, **kwargs):
@@ -21,7 +22,8 @@ class _FunctionBase(object):
         # Get function for the tensor type and call it with the args
         fn = cls._fn_dict.get(tensor_type, None)
         assert fn is not None, (
-            'Class %s does not support type %s' % (cls.__name__, tensor_type))
+                'Class %s does not support type %s' % (
+            cls.__name__, tensor_type))
         return fn(*args, **kwargs)
 
 
@@ -39,7 +41,7 @@ class _AffineFunction(_FunctionBase):
                  affine_matrix.size()[1:] == (2, 3)) or
                 (affine_matrix.dim() == 2 and
                  affine_matrix.size() == (2, 3))), (
-                     'Size of the affine matrix must be (2, 3) or (?, 2, 3).')
+            'Size of the affine matrix must be (2, 3) or (?, 2, 3).')
 
         # Make sure that all the tensors are contiguous and
         # on the same device as x.
@@ -71,7 +73,7 @@ class _MorphologyFunction(_FunctionBase):
                 # All structuring elements have the same size
                 structuring_element_size = torch.LongTensor(
                     structuring_element.size()[0] *
-                    [ structuring_element.size()[1:] ])
+                    [structuring_element.size()[1:]])
             else:
                 raise ValueError(
                     'The structuring element should be a matrix (2d tensor), '
@@ -81,8 +83,8 @@ class _MorphologyFunction(_FunctionBase):
             for i, kern in enumerate(structuring_element):
                 assert (torch.is_tensor(kern) and
                         kern.dim() == 2), (
-                            ('The %d-th structuring element should be '
-                             'a matrix') % i)
+                        ('The %d-th structuring element should be '
+                         'a matrix') % i)
                 structuring_element_size.append(kern.size())
             structuring_element_size = torch.LongTensor(
                 structuring_element_size)
@@ -110,11 +112,21 @@ class _MorphologyFunction(_FunctionBase):
                 tensor_type=x.type())
         return y
 
+
 class _DilateFunction(_MorphologyFunction):
     _fn_dict = ffi.DILATE_DICT
 
+    @classmethod
+    def Apply(cls, x, structuring_element, y=None):
+        super(_DilateFunction, cls).Apply(x, structuring_element, y)
+
+
 class _ErodeFunction(_MorphologyFunction):
     _fn_dict = ffi.ERODE_DICT
+
+    @classmethod
+    def Apply(cls, x, structuring_element, y=None):
+        super(_ErodeFunction, cls).Apply(x, structuring_element, y)
 
 
 def affine(batch_input, affine_matrix, border_value=0, batch_output=None):
@@ -130,6 +142,7 @@ def affine(batch_input, affine_matrix, border_value=0, batch_output=None):
     """
     return _AffineFunction.Apply(batch_input, affine_matrix, border_value,
                                  batch_output)
+
 
 def dilate(batch_input, structuring_element, batch_output=None):
     r"""Apply a morphology dilation to a batch of images, given by a
@@ -147,6 +160,7 @@ def dilate(batch_input, structuring_element, batch_output=None):
     """
     return _DilateFunction.Apply(batch_input, structuring_element,
                                  batch_output)
+
 
 def erode(batch_input, structuring_element, batch_output=None):
     r"""Apply a morphology erosion to a batch of images, given by a

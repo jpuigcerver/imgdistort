@@ -9,8 +9,8 @@ try:
 except:
     cv = None
 
-from imgdistort_pytorch.ffi import is_cuda_available
 from imgdistort_pytorch import affine, types, utils
+
 
 class AffineTest(unittest.TestCase):
     def run_identity(self, cuda, ttype):
@@ -49,8 +49,8 @@ class AffineTest(unittest.TestCase):
 
     def run_multiple_channels(self, cuda, ttype):
         x = utils.random_tensor(ttype, cuda, size=(1, 3, 7, 9))
-        m = torch.DoubleTensor([[ 0.9, 0.1, -0.2],
-                                [-0.1, 0.8,  0.3]])
+        m = torch.DoubleTensor([[0.9, 0.1, -0.2],
+                                [-0.1, 0.8, 0.3]])
         # Run affine transform on the three channels simultaneously.
         m = utils.same_device_as(m, x)
         y = affine(x, m)
@@ -93,8 +93,8 @@ for test_name, run_method in zip(
          'run_multiple_channels',
          'run_multiple_images']):
     for ttype, tdesc in zip(TENSOR_TYPE, TENSOR_DESC):
-        utils.register_torch_test(AffineTest, test_name, run_method, ttype, tdesc, add_cuda=True)
-
+        utils.register_torch_test(AffineTest, test_name, run_method, ttype,
+                                  tdesc, add_cuda=True)
 
 if cv is not None:
     # Only floating types are supported by OpenCV

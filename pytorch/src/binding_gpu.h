@@ -1,30 +1,30 @@
 void imgdistort_gpu_affine_nchw_f32(
     const THCudaDoubleTensor* m, const THCudaTensor* src,
-    THCudaTensor* dst);
+    THCudaTensor* dst, const float border_value);
 
 void imgdistort_gpu_affine_nchw_f64(
     const THCudaDoubleTensor* m, const THCudaDoubleTensor* src,
-    THCudaDoubleTensor* dst);
+    THCudaDoubleTensor* dst, const double border_value);
 
 void imgdistort_gpu_affine_nchw_s8(
     const THCudaDoubleTensor* m, const THCudaCharTensor* src,
-    THCudaCharTensor* dst);
+    THCudaCharTensor* dst, const int8_t border_value);
 
 void imgdistort_gpu_affine_nchw_s16(
     const THCudaDoubleTensor* m, const THCudaShortTensor* src,
-    THCudaShortTensor* dst);
+    THCudaShortTensor* dst, const int16_t border_value);
 
 void imgdistort_gpu_affine_nchw_s32(
     const THCudaDoubleTensor* m, const THCudaIntTensor* src,
-    THCudaIntTensor* dst);
+    THCudaIntTensor* dst, const int32_t border_value);
 
 void imgdistort_gpu_affine_nchw_s64(
     const THCudaDoubleTensor* m, const THCudaLongTensor* src,
-    THCudaLongTensor* dst);
+    THCudaLongTensor* dst, const int64_t border_value);
 
 void imgdistort_gpu_affine_nchw_u8(
     const THCudaDoubleTensor* m, const THCudaByteTensor* src,
-    THCudaByteTensor* dst);
+    THCudaByteTensor* dst, const uint8_t border_value);
 
 
 

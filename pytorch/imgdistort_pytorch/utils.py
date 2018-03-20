@@ -4,6 +4,7 @@ import torch
 
 from imgdistort_pytorch.ffi import is_cuda_available
 
+
 def random_tensor(ttype, cuda=False, size=(2, 3, 4, 5)):
     r"""Generate a random tensor for testing purposes."""
     # Note: uniform_() is only defined for FloatTensor and DoubleTensor.
@@ -15,6 +16,7 @@ def random_tensor(ttype, cuda=False, size=(2, 3, 4, 5)):
     # Convert FloatTensor to the final type.
     x = x.type(ttype)
     return x.cuda() if cuda else x
+
 
 def register_torch_test(cls, pattern_name, run_method, ttype, tdesc,
                         add_cuda=True, *args):
@@ -36,6 +38,7 @@ def register_torch_test(cls, pattern_name, run_method, ttype, tdesc,
     if add_cuda and is_cuda_available():
         setattr(cls, pattern_name.format(device='gpu', tdesc=tdesc),
                 lambda self: getattr(cls, run_method)(self, True, ttype, *args))
+
 
 def same_device_as(x, y):
     r"""Copy x to the same device as y, if necessary."""

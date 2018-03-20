@@ -9,7 +9,6 @@ try:
 except:
     cv = None
 
-from imgdistort_pytorch.ffi import is_cuda_available
 from imgdistort_pytorch import dilate, erode, types, utils
 
 class MorphologyTest(unittest.TestCase):

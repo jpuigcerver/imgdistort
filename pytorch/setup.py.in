@@ -1,6 +1,6 @@
 import re
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from torch.utils.ffi import create_extension
 
 # Configure package name
@@ -53,7 +53,8 @@ for lib in EXTERNAL_LIBS:
         libraries.append(lib)
 
 ffi = create_extension(
-    name='imgdistort',
+    name='imgdistort_pytorch._imgdistort',
+    package=True,
     language='c',
     headers=HEADERS,
     sources=[],
@@ -63,9 +64,7 @@ ffi = create_extension(
     libraries=libraries,
     extra_objects=extra_objects,
     verbose=True)
-
 ffi = ffi.distutils_extension()
-ffi.name = 'imgdistort_pytorch._imgdistort'
 
 if __name__ == '__main__':
     setup(
@@ -78,6 +77,6 @@ if __name__ == '__main__':
         install_requires=['torch', 'cffi'],
         license='MIT',
         name=PACKAGE_NAME,
-        packages=['imgdistort_pytorch'],
+        packages=find_packages(),
         url=URL,
         version='${IMGDISTORT_VERSION}')

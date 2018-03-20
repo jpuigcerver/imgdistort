@@ -22,9 +22,11 @@ class AffineCaller : public ::imgdistort::pytorch::AffineCaller<T> {
  public:
   void operator()(
       const int N, const int C, const int H, const int W,
-      const double* M, const int Mn, const T* src, T* dst) const override {
+      const double* M, const int Mn, const T* src, T* dst,
+      const T& border_value) const override {
     cudaStream_t stream = THCState_getCurrentStream(state);
-    ::imgdistort::gpu::affine_nchw(N, C, H, W, M, Mn, src, W, dst, W, stream);
+    ::imgdistort::gpu::affine_nchw(N, C, H, W, M, Mn, src, W, dst, W,
+                                   border_value, stream);
   };
 };
 

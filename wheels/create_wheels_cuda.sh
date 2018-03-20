@@ -6,10 +6,11 @@ SOURCE_DIR=$(cd $SDIR/.. && pwd);
 
 if [ "$DOCKER" != 1 ]; then
   cd $SDIR;
-  CUDA_VERSIONS=(75 80 90);
-  CUDA_IMAGES=(nvidia/cuda:7.5-devel
-	       nvidia/cuda:8.0-devel
-	       nvidia/cuda:9.0-devel);
+  CUDA_VERSIONS=(80 90 91);
+  CUDA_IMAGES=(
+    nvidia/cuda:8.0-devel
+	nvidia/cuda:9.0-devel
+	nvidia/cuda:9.1-devel);
   for i in $(seq 1 ${#CUDA_VERSIONS[@]}); do
     rm -rf /tmp/imgdistort/wheels/cu${CUDA_VERSIONS[i - 1]};
     mkdir -p /tmp/imgdistort/wheels/cu${CUDA_VERSIONS[i - 1]};
@@ -36,6 +37,8 @@ if [ "$CUDA_VERSION_SHORT" = 75 ]; then
   export CUDA_ARCH_LIST="Kepler Maxwell";
 elif [ "$CUDA_VERSION_SHORT" = 80 ]; then
   export CUDA_ARCH_LIST="Kepler Maxwell Pascal";
+elif  [ "$CUDA_VERSION_SHORT" = 90 ]; then
+  export CUDA_ARCH_LIST="Kepler Maxwell Pascal 7.0+PTX";
 elif  [ "$CUDA_VERSION_SHORT" = 90 ]; then
   export CUDA_ARCH_LIST="Kepler Maxwell Pascal 7.0+PTX";
 else
