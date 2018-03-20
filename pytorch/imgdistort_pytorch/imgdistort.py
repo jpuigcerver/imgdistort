@@ -118,7 +118,7 @@ class _DilateFunction(_MorphologyFunction):
 
     @classmethod
     def Apply(cls, x, structuring_element, y=None):
-        super(_DilateFunction, cls).Apply(x, structuring_element, y)
+        return super(_DilateFunction, cls).Apply(x, structuring_element, y)
 
 
 class _ErodeFunction(_MorphologyFunction):
@@ -126,7 +126,7 @@ class _ErodeFunction(_MorphologyFunction):
 
     @classmethod
     def Apply(cls, x, structuring_element, y=None):
-        super(_ErodeFunction, cls).Apply(x, structuring_element, y)
+        return super(_ErodeFunction, cls).Apply(x, structuring_element, y)
 
 
 def affine(batch_input, affine_matrix, border_value=0, batch_output=None):

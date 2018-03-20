@@ -11,6 +11,7 @@ except:
 
 from imgdistort_pytorch import dilate, erode, types, utils
 
+
 class MorphologyTest(unittest.TestCase):
     def run_identity(self, cuda, ttype, op):
         x = utils.random_tensor(ttype, cuda)
