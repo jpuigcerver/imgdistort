@@ -6,11 +6,12 @@ SOURCE_DIR=$(cd $SDIR/.. && pwd);
 
 if [ "$DOCKER" != 1 ]; then
   cd $SDIR;
-  CUDA_VERSIONS=(80 90 91);
+  CUDA_VERSIONS=(75 80 90 91);
   CUDA_IMAGES=(
+    nvidia/cuda:7.5-devel
     nvidia/cuda:8.0-devel
-	nvidia/cuda:9.0-devel
-	nvidia/cuda:9.1-devel);
+    nvidia/cuda:9.0-devel
+    nvidia/cuda:9.1-devel);
   for i in $(seq 1 ${#CUDA_VERSIONS[@]}); do
     rm -rf /tmp/imgdistort/wheels/cu${CUDA_VERSIONS[i - 1]};
     mkdir -p /tmp/imgdistort/wheels/cu${CUDA_VERSIONS[i - 1]};
