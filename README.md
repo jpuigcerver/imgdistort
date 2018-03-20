@@ -8,7 +8,7 @@ A library to perform image distortions on the CPU and GPU (CUDA).
 - [Affine transformations](https://en.wikipedia.org/wiki/Affine_transformation)
 - [Grayscale dilation](https://en.wikipedia.org/wiki/Dilation_(morphology))
 - [Grayscale erosion](https://en.wikipedia.org/wiki/Erosion_(morphology))
-  
+
 ## Requirements
 
 ### Minimum:
@@ -22,30 +22,30 @@ A library to perform image distortions on the CPU and GPU (CUDA).
 
 ### PyTorch bindings:
 - [PyTorch](http://pytorch.org/) (tested with version 0.3.0).
-  
+
 ## Installation
 
 ### PyTorch bindings with pip
 
-The easiest way of using imgdistort with PyTorch is using pip. I have 
+The easiest way of using imgdistort with PyTorch is using pip. I have
 precompiled the tool for Linux using different version of Python
-and supporting different devices. The value in each cell corresponds to 
+and supporting different devices. The value in each cell corresponds to
 the commit from which the wheel was built.
 
 |          | Python 2.7 | Python 3.5 | Python 3.6 |
 |----------|:----------:|:----------:|:----------:|
-| CPU-only | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
-| CUDA 7.5 | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
-| CUDA 8.0 | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
-| CUDA 9.0 | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+e5fa06d-cp27-cp27mu-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl) | [e5fa06d](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+e5fa06d-cp36-cp36m-linux_x86_64.whl) |
+| CPU-only | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+79982cf-cp27-cp27mu-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+79982cf-cp35-cp35m-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+79982cf-cp36-cp36m-linux_x86_64.whl) |
+| CUDA 7.5 | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+79982cf-cp27-cp27mu-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+79982cf-cp35-cp35m-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu75/imgdistort_pytorch_cu75-0.1.0+79982cf-cp36-cp36m-linux_x86_64.whl) |
+| CUDA 8.0 | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+79982cf-cp27-cp27mu-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+79982cf-cp35-cp35m-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu80/imgdistort_pytorch_cu80-0.1.0+79982cf-cp36-cp36m-linux_x86_64.whl) |
+| CUDA 9.0 | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+79982cf-cp27-cp27mu-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+79982cf-cp35-cp35m-linux_x86_64.whl) | [79982cf](https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cu90/imgdistort_pytorch_cu90-0.1.0+79982cf-cp36-cp36m-linux_x86_64.whl) |
 
 For instance, to install the CPU-only version for Python 3.5:
 ```bash
-pip3 install https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+e5fa06d-cp35-cp35m-linux_x86_64.whl
+pip3 install https://www.prhlt.upv.es/~jpuigcerver/imgdistort/whl/cpu/imgdistort_pytorch-0.1.0+79982cf-cp35-cp35m-linux_x86_64.whl
 ```
 
 Notice that each version of the library was compiled to support only the most
-common and supported architectures in each CUDA release. 
+common and supported architectures in each CUDA release.
 Choose the compiled version accordingly:
 
 |          | Supported architectures        | Compute Capability                |
@@ -89,4 +89,3 @@ Some helpful variables are:
   with this variable.
 - `PYTORCH_SETUP_PREFIX`: Prefix location to install the PyTorch bindings
   (e.g. /home/jpuigcerver/.local).
-  
